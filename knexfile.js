@@ -5,7 +5,7 @@ const pathToDatabase = `${__dirname}/database`
 module.exports = {
   development: {
     client: 'pg',
-    connection: "postgres://kudakwashe:admin@localhost:5432/transcriptus",
+    connection: "postgres://postgres:admin@localhost:5432/transcriptus",
     migrations: { directory: `${pathToDatabase}/migrations` },
     seeds: { directory: `${pathToDatabase}/seeds` }
   },
