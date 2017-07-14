@@ -1,7 +1,7 @@
 {
-  "name": "Kexpress",
+  "name": "comp-lock-web-api",
   "version": "1.0.0",
-  "description": "Boiler plate for my Express API projects",
+  "description": "Api for use with comp-lock-web-ui",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
