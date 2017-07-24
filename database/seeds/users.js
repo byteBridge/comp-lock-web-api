@@ -7,6 +7,7 @@ const users = [
     type: 'administrator',
     f_name: 'Kudakwashe',
     s_name: 'Paradzayi',
+    gender: 'M',
     email: 'kgparadzayi@gmail.com'
   },
   {
@@ -15,6 +16,7 @@ const users = [
     type: 'student',
     f_name: 'Garikai',
     s_name: 'Gumbo',
+    gender: 'M',
     email: 'grod56@gmail.com'
   }
 ]
