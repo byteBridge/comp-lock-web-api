@@ -116,6 +116,58 @@ function checkValidity (dbUser, password) {
   })
 }
 
+function checkTimeLimits (dbUser) {
+  return new Promise((resolve, reject) => {
+    const today = moment().format('MM/DD/YYYY')
+    knex('logsession')
+      .select()
+      .where('log_date', '=', today)
+      .then(logs => {
+        if (logs.length === 0) return "00:00:00"
+        
+        let hours = 0
+          , minutes = 0
+          , seconds = 0
+
+        for (let i = 0; i < logs.length; i++) {
+          const splitTime = logs[i].duration.split(':')
+          hours +=  Number(splitTime[0])
+          minutes += Number(splitTime[1])
+          seconds +=  Number(splitTime[2])
+        }
+        
+        // normalise seconds
+        if (seconds > 59) {
+          minutes += Math.floor(seconds / 60)
+          seconds = Math.floor(seconds % 60)
+        }
+        
+        // normalise minutes
+        if (minutes > 59) {
+          hours += Math.floor(minutes / 60)
+          minutes = Math.floor(minutes % 60)
+        }
+
+        const time_limit = dbUser.time_limit.split(':')
+
+        let hourLimit = time_limit[0]
+          , minutesLimit = time_limit[1]
+        
+        // Check if user exhausted allocated time
+        if (hours >= hourLimit && hourLimit !=='00') return reject('Timeup by hour')
+        if (minutes >= minutesLimit) return reject('Timeup by minute')
+        
+        const usedTime = `${hours}:${minutes}:${seconds}`
+        const remainingTime = `${hourLimit - hours}:${minutesLimit - minutes}:00`
+
+        Object.assign(dbUser, { remainingTime, usedTime })
+
+        resolve(dbUser)
+      })
+      .catch(reject)
+  })
+}
+
 module.exports = {
   findOne,
   createUser,
