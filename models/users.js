@@ -45,6 +45,9 @@ function login (username, password) {
       .then(dbUser => checkValidity(dbUser, password))
       .catch(console.log)
 
+      .then(checkTimeLimits)
+      .catch(console.log)
+
       .then(console.log)
 
     knex('users').select().where({ username })
