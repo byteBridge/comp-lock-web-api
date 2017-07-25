@@ -40,9 +40,13 @@ function getAllUsers () {
 function login (username, password) {
   return new Promise((resolve, reject) => {
     getStudentProfile(username)
-      .then(console.log)
       .catch(console.log)
-      
+
+      .then(dbUser => checkValidity(dbUser, password))
+      .catch(console.log)
+
+      .then(console.log)
+
     knex('users').select().where({ username })
       .then(user => {
         if (user.length) {
