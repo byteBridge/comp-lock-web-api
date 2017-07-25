@@ -91,6 +91,27 @@ function getStudentProfile (username) {
       .catch(reject)
   })
 }
+
+function checkValidity (dbUser, password) {
+  return new Promise((resolve, reject) => {
+    // does user exist?
+    if (!dbUser) return reject('invalid username')
+    
+    // is user password valid?
+    if (!comparePasswords(password, dbUser.password)) return reject('Invalid password')
+    
+    // is user blocked?
+    if (dbUser.blocked === true) return reject('Student blocked')
+    
+    // is user online?
+    if (dbUser.login_time !== null) return reject('Student already logged in')
+    
+    // if all is well, pass on the user to the
+    // next function in the promise chain
+    resolve(dbUser)
+  })
+}
+
 module.exports = {
   findOne,
   createUser,
