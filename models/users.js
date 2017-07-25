@@ -39,6 +39,10 @@ function getAllUsers () {
 
 function login (username, password) {
   return new Promise((resolve, reject) => {
+    getStudentProfile(username)
+      .then(console.log)
+      .catch(console.log)
+      
     knex('users').select().where({ username })
       .then(user => {
         if (user.length) {
@@ -62,6 +66,28 @@ function login (username, password) {
   })
 }
 
+function getStudentProfile (username) {
+  return new Promise((resolve, reject) => {
+    const requiredFields = [
+      'users.username',
+      'users.f_name',
+      'users.s_name',
+      'online.login_time',
+      'time_limit.time_limit'
+    ]
+
+    knex('users')
+      .leftJoin('online', 'users.username', '=', 'online.username')
+      .leftJoin('time_limit', 'users.type', '=', 'time_limit.user_type')
+      .select(...requiredFields)
+      .where('users.username', '=', username)
+
+      .then(res => {
+        resolve(res[0])
+      })
+      .catch(reject)
+  })
+}
 module.exports = {
   findOne,
   createUser,
