@@ -72,6 +72,7 @@ function getStudentProfile (username) {
       'users.username',
       'users.f_name',
       'users.s_name',
+      'users.password',
       'online.login_time',
       'time_limit.time_limit'
     ]
