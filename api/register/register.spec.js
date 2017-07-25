@@ -13,6 +13,16 @@ describe('login', () => {
   let server
   const registerUrl = '/auth/register'
 
+  const user = {
+    username: 'tinaye',
+    password: 'makonese',
+    type: 'student',
+    f_name: 'Tinaye',
+    s_name: 'Makonese',
+    gender: 'Male',
+    email: 'tbagcity@gmail.com'
+  }
+
   before(done => {
     startServer(runningServer => { 
       server = runningServer
@@ -35,10 +45,7 @@ describe('login', () => {
     it('should register a user', done => {
       chai.request(server)
         .post(registerUrl)
-        .send({
-          username: 'tinaye',
-          password: 'makonese'
-        })
+        .send(user)
         .end((err, res) => {
           should.not.exist(err)
           res.redirects.length.should.eql(0)
@@ -51,12 +58,13 @@ describe('login', () => {
     })
 
     it('should fail if the user already exists', done => {
+      // modify the user object
+      const modifiedUser = Object.assign({}, user)
+      modifiedUser.username = 'kudakwashe'
+
       chai.request(server)
         .post(registerUrl)
-        .send({
-          username: 'kudakwashe',
-          password: 'paradzayi'
-        })
+        .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
           res.redirects.length.should.eql(0)
@@ -68,12 +76,13 @@ describe('login', () => {
     })
 
     it('should fail if the username is not provided', done => {
+      // remove the username
+      const modifiedUser = Object.assign({}, user)
+      modifiedUser.username = ''
+
       chai.request(server)
         .post(registerUrl)
-        .send({
-          username: '',
-          password: 'paradzayi'
-        })
+        .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
           res.redirects.length.should.eql(0)
@@ -85,12 +94,12 @@ describe('login', () => {
     })
 
     it('should fail if the password is not provided', done => {
+      const modifiedUser = Object.assign({}, user)
+      modifiedUser.password = ''
+
       chai.request(server)
         .post(registerUrl)
-        .send({
-          username: 'kudakwashe',
-          password: ''
-        })
+        .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
           res.redirects.length.should.eql(0)
