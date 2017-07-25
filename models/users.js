@@ -126,7 +126,11 @@ function checkTimeLimits (dbUser) {
       .select()
       .where('log_date', '=', today)
       .then(logs => {
-        if (logs.length === 0) return "00:00:00"
+        
+        if (logs.length === 0) {
+          Object.assign(dbUser, { remainingTime: dbUser.time_limit, usedTime: '00:00:00' })
+          return resolve(dbUser)
+        }
         
         let hours = 0
           , minutes = 0
