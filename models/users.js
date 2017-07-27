@@ -147,9 +147,12 @@ function checkTimeLimits (dbUser) {
     const today = moment().format('MM/DD/YYYY')
     knex('logsession')
       .select()
-      .where('log_date', '=', today)
+      .where({
+        log_date: today,
+        username: dbUser.username
+      })
       .then(logs => {
-        
+
         if (logs.length === 0) {
           Object.assign(dbUser, { remaining_time: dbUser.time_limit, used_time: '00:00:00' })
           return resolve(dbUser)
