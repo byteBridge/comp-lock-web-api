@@ -35,7 +35,7 @@ describe('login', () => {
     it('should login a user (student) with success', done => {
       const user = {
         username: 'garikai',
-        password: 'gumbo'
+        password: 'rodneygg'
       }
 
       chai.request(server)
