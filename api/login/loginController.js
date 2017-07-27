@@ -13,7 +13,10 @@ module.exports = (req, res) => {
     if (error) return buildResponse(res, 400, { message: 'bad request', error: error.details[0].message})
 
     userModel.login(value.username, value.password)
-      .then(token => buildResponse(res, 200, { message: 'success', token }))
+      .then(userData => {
+        const { token, user } = userData
+        buildResponse(res, 200, { message: 'success', token, user })
+      })
       .catch(error => {
         if (error && error.status === 401) return buildResponse(res, 401, { message: 'invalid login details' })
         buildResponse(res, 500, { message: 'Internal server error'})
