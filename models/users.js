@@ -67,27 +67,7 @@ function login (username, password) {
       // failed to get user profile
       .catch(console.log)
 
-    knex('users').select().where({ username })
-      .then(user => {
-        if (user.length) {
-          if (comparePasswords(password, user[0].password) === true) {
-            return resolve(generateToken({
-              username: user[0].username,
-              exp: moment().add(7, 'd').unix()
-            }))
-          } else {
-            //invalid password
-            reject({ status: 401 })
-          }
-        }
-        // user not found
-        reject({ status: 401 })
-      })
-
-      .catch(err => {
-        reject()
-      })
-  })
+    })
 }
 
 function getStudentProfile (username) {
