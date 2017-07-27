@@ -40,18 +40,21 @@ function getAllUsers () {
 function login (username, password) {
   return new Promise((resolve, reject) => {
     getStudentProfile(username)
+      .then(dbUser => {
+        checkValidity(dbUser, password)
+         .then(dbUser => {
+           if (dbUser.type === 'administrator') {
+            // resolve the admin here
+            console.log(dbUser)
+           } else {
+            checkTimeLimits(dbUser)
+              .then(console.log)
+              .catch(console.log)
+           }
+         })
+        .catch(console.log)
+      })
       .catch(console.log)
-
-      .then(dbUser => checkValidity(dbUser, password))
-      .catch(console.log)
-
-      .then(dbUser => dbUser.type === 'administrator'
-                        ? Promise.resolve(dbUser)
-                        : checkTimeLimits(dbUser)
-      )
-      .catch(console.log)
-
-      .then(console.log)
 
     knex('users').select().where({ username })
       .then(user => {
