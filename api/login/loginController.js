@@ -18,7 +18,7 @@ module.exports = (req, res) => {
         buildResponse(res, 200, { message: 'success', token, user })
       })
       .catch(error => {
-        if (error && error.status === 401) return buildResponse(res, 401, { message: 'invalid login details' })
+        if (error && error.status === 401) return buildResponse(res, 401, { message: error.message })
         buildResponse(res, 500, { message: 'Internal server error'})
       })
 }

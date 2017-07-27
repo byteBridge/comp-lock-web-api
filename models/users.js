@@ -76,12 +76,18 @@ function login (username, password) {
               })
 
               // failed to check time limits
-              .catch(() => reject({ status: 401 }))
+              .catch((error) => reject({
+                status: 401,
+                message: error.message
+              }))
            }
          })
 
         // User is not valid for login
-        .catch(() => reject({ status: 401 }))
+        .catch((error) => reject({
+          status: 401,
+          message: error.message
+        }))
       })
 
       // failed to get user profile
@@ -119,16 +125,16 @@ function getStudentProfile (username) {
 function checkValidity (dbUser, password) {
   return new Promise((resolve, reject) => {
     // does user exist?
-    if (!dbUser) return reject('invalid username')
+    if (!dbUser) return reject({ message: 'invalid login details' })
     
     // is user password valid?
-    if (!comparePasswords(password, dbUser.password)) return reject('Invalid password')
+    if (!comparePasswords(password, dbUser.password)) return reject({ message: 'invalid login details' })
     
     // is user blocked?
-    if (dbUser.blocked === true) return reject('Student blocked')
+    if (dbUser.blocked === true) return reject({ message: `We regret to inform you that your account qualifies to be blocked. Report by the librarian's desk to have it unblocked` })
     
     // is user online?
-    if (dbUser.login_time !== null) return reject('Student already logged in')
+    if (dbUser.login_time !== null) return reject({ message: 'Your account is already signed in on another computer. Sign out and try again.' })
     
     // if all is well, pass on the user to the
     // next function in the promise chain
@@ -178,8 +184,8 @@ function checkTimeLimits (dbUser) {
           , minutesLimit = time_limit[1]
         
         // Check if user exhausted allocated time
-        if (hours >= hourLimit && hourLimit !=='00') return reject('Timeup by hour')
-        if (minutes >= minutesLimit) return reject('Timeup by minute')
+        if (hours >= hourLimit && hourLimit !=='00') return reject({ message: 'We regret to inform you that you have used up the time allocated to your account. Please come back tomorrow for more research.'})
+        if (minutes >= minutesLimit) return reject({ message: 'We regret to inform you that you have used up the time allocated to your account. Please come back tomorrow for more research.'})
         
         const usedTime = `${hours}:${minutes}:${seconds}`
         const remainingTime = `${hourLimit - hours}:${minutesLimit - minutes}:00`
