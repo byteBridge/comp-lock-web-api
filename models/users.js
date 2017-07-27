@@ -47,6 +47,9 @@ function login (username, password) {
          // successfully checked user validity
          .then(dbUser => {
            if (dbUser.type === 'administrator') {
+            // do not send the password to the client
+            delete dbUser.password
+
             // resolve the admin here
             return resolve({
               user: dbUser,
@@ -57,9 +60,12 @@ function login (username, password) {
             })
            } else {
             checkTimeLimits(dbUser)
-
+             
               // successfully checked time limits
               .then(dbUser => {
+                // do not send the password to the client
+                delete dbUser.password
+                
                 return resolve({
                   user: dbUser,
                   token: generateToken({
