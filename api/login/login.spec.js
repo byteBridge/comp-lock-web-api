@@ -32,7 +32,37 @@ describe('login', () => {
   afterEach(() => knex.migrate.rollback())
   
   describe('POST /login', () => {
-    it('should login a user with success', done => {
+    it('should login a user (student) with success', done => {
+      const user = {
+        username: 'garikai',
+        password: 'gumbo'
+      }
+
+      chai.request(server)
+        .post(loginUrl)     
+        .send(user)
+        .end((err, res) => {
+          should.not.exist(err)
+          res.redirects.length.should.eql(0)
+          res.status.should.eql(200)
+          res.type.should.eql('application/json')
+          res.body.should.contain.keys('token', 'message', 'user')
+          res.body.token.should.be.a('string')
+          res.body.message.should.eql('success')
+          const userKeys = [ 'username', 'f_name', 's_name', 'type', 'blocked', 'login_time', 'time_limit', 'remaining_time', 'used_time']
+          res.body.user.should.contain.keys(...userKeys)
+          res.body.user.should.not.contain.keys('password')
+
+          // test for appropriate headers
+          should.exist(res.header['cache-control'])
+          should.exist(res.header['pragma'])
+          res.header['cache-control'].should.eql('no-store')
+          res.header['pragma'].should.eql('no-store')
+          done()
+        })
+    })
+
+    it('should login a user (administrator) with success', done => {
       const user = {
         username: 'kudakwashe',
         password: 'paradzayi'
@@ -46,10 +76,13 @@ describe('login', () => {
           res.redirects.length.should.eql(0)
           res.status.should.eql(200)
           res.type.should.eql('application/json')
-          res.body.should.contain.keys('token', 'message')
+          res.body.should.contain.keys('token', 'message', 'user')
           res.body.token.should.be.a('string')
           res.body.message.should.eql('success')
-
+          const userKeys = [ 'username', 'f_name', 's_name', 'type', 'blocked', 'login_time', 'time_limit']
+          res.body.user.should.contain.keys(...userKeys)
+          res.body.user.should.not.contain.keys('password')
+          
           // test for appropriate headers
           should.exist(res.header['cache-control'])
           should.exist(res.header['pragma'])
