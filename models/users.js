@@ -48,24 +48,38 @@ function login (username, password) {
          .then(dbUser => {
            if (dbUser.type === 'administrator') {
             // resolve the admin here
-            console.log(dbUser)
+            return resolve({
+              user: dbUser,
+              token: generateToken({
+                username: dbUser.username,
+                exp: moment().add(7, 'd').unix()
+              })
+            })
            } else {
             checkTimeLimits(dbUser)
 
               // successfully checked time limits
-              .then(console.log)
+              .then(dbUser => {
+                return resolve({
+                  user: dbUser,
+                  token: generateToken({
+                    username: dbUser.username,
+                    exp: moment().add(7, 'd').unix()
+                  })
+                })
+              })
 
               // failed to check time limits
-              .catch(console.log)
+              .catch(() => reject({ status: 401 }))
            }
          })
 
         // User is not valid for login
-        .catch(console.log)
+        .catch(() => reject({ status: 401 }))
       })
 
       // failed to get user profile
-      .catch(console.log)
+      .catch(() => reject())
 
     })
 }
