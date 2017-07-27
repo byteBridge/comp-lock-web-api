@@ -40,20 +40,31 @@ function getAllUsers () {
 function login (username, password) {
   return new Promise((resolve, reject) => {
     getStudentProfile(username)
+      // successfully got profile
       .then(dbUser => {
         checkValidity(dbUser, password)
+
+         // successfully checked user validity
          .then(dbUser => {
            if (dbUser.type === 'administrator') {
             // resolve the admin here
             console.log(dbUser)
            } else {
             checkTimeLimits(dbUser)
+
+              // successfully checked time limits
               .then(console.log)
+
+              // failed to check time limits
               .catch(console.log)
            }
          })
+
+        // User is not valid for login
         .catch(console.log)
       })
+
+      // failed to get user profile
       .catch(console.log)
 
     knex('users').select().where({ username })
