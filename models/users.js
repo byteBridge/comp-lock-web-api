@@ -184,7 +184,7 @@ function checkTimeLimits (dbUser) {
         const usedTime = `${hours}:${minutes}:${seconds}`
         const remainingTime = `${hourLimit - hours}:${minutesLimit - minutes}:00`
 
-        Object.assign(dbUser, { remaining_time, used_time })
+        Object.assign(dbUser, { remaining_time: remainingTime, used_time: usedTime })
 
         resolve(dbUser)
       })
