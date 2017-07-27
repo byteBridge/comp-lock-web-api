@@ -10,7 +10,7 @@ module.exports = (req, res) => {
       .header('Pragma', 'no-store')
 
     const {error, value} = validator.validate(req.body)
-    if (error) return buildResponse(res, 400, { message: 'bad request', error: error.details[0].message})
+    if (error) return buildResponse(res, 400, { message: 'bad request', reason: error.details[0].message})
 
     userModel.login(value.username, value.password)
       .then(userData => {
