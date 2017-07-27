@@ -51,13 +51,7 @@ function login (username, password) {
             delete dbUser.password
 
             // resolve the admin here
-            return resolve({
-              user: dbUser,
-              token: generateToken({
-                username: dbUser.username,
-                exp: moment().add(7, 'd').unix()
-              })
-            })
+            return resolve(successResponseToApi(dbUser))
            } else {
             checkTimeLimits(dbUser)
              
@@ -66,28 +60,16 @@ function login (username, password) {
                 // do not send the password to the client
                 delete dbUser.password
                 
-                return resolve({
-                  user: dbUser,
-                  token: generateToken({
-                    username: dbUser.username,
-                    exp: moment().add(7, 'd').unix()
-                  })
-                })
+                return resolve(successResponseToApi(dbUser))
               })
 
               // failed to check time limits
-              .catch((error) => reject({
-                status: 401,
-                message: error.message
-              }))
+              .catch((error) => reject(errorResponseToApi(error)))
            }
          })
 
         // User is not valid for login
-        .catch((error) => reject({
-          status: 401,
-          message: error.message
-        }))
+        .catch((error) => reject(errorResponseToApi(error)))
       })
 
       // failed to get user profile
@@ -201,6 +183,22 @@ function checkTimeLimits (dbUser) {
   })
 }
 
+function successResponseToApi (dbUser) {
+  return {
+    user: dbUser,
+    token: generateToken({
+      username: dbUser.username,
+      exp: moment().add(7, 'd').unix()
+    })
+  }
+}
+
+function errorResponseToApi (error) {
+  return {
+    status: 401,
+    message: error.message
+  }
+}
 module.exports = {
   findOne,
   createUser,
