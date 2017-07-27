@@ -47,8 +47,6 @@ function login (username, password) {
          // successfully checked user validity
          .then(dbUser => {
            if (dbUser.type === 'administrator') {
-            // do not send the password to the client
-            delete dbUser.password
 
             // resolve the admin here
             return resolve(successResponseToApi(dbUser))
@@ -57,9 +55,7 @@ function login (username, password) {
              
               // successfully checked time limits
               .then(dbUser => {
-                // do not send the password to the client
-                delete dbUser.password
-                
+              
                 return resolve(successResponseToApi(dbUser))
               })
 
@@ -184,6 +180,9 @@ function checkTimeLimits (dbUser) {
 }
 
 function successResponseToApi (dbUser) {
+  // do not send the password to the client
+  delete dbUser.password
+  
   return {
     user: dbUser,
     token: generateToken({
