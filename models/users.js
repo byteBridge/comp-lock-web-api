@@ -139,7 +139,7 @@ function checkTimeLimits (dbUser) {
       .then(logs => {
         
         if (logs.length === 0) {
-          Object.assign(dbUser, { remainingTime: dbUser.time_limit, usedTime: '00:00:00' })
+          Object.assign(dbUser, { remaining_time: dbUser.time_limit, used_time: '00:00:00' })
           return resolve(dbUser)
         }
         
@@ -178,7 +178,7 @@ function checkTimeLimits (dbUser) {
         const usedTime = `${hours}:${minutes}:${seconds}`
         const remainingTime = `${hourLimit - hours}:${minutesLimit - minutes}:00`
 
-        Object.assign(dbUser, { remainingTime, usedTime })
+        Object.assign(dbUser, { remaining_time, used_time })
 
         resolve(dbUser)
       })
