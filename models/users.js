@@ -220,4 +220,3 @@ module.exports = {
   login,
   getAllUsers
 }
-module.exports.comparePasswords = comparePasswords
