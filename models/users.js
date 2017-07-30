@@ -37,8 +37,10 @@ function getAllUsers () {
   })
 }
 
-function login (username, password) {
+function login (credentials) {
   return new Promise((resolve, reject) => {
+    const { username, password } = credentials
+    
     getStudentProfile(username)
       // successfully got profile
       .then(dbUser => {
