@@ -55,8 +55,9 @@ function login (username, password) {
              
               // successfully checked time limits
               .then(dbUser => {
-              
-                return resolve(successResponseToApi(dbUser))
+                goOnline(dbUser.username)
+                  .then(() => resolve(successResponseToApi(dbUser)))
+                  .catch(() => reject(errorResponseToApi({ message: 'Something happened and we could not put you online. Please try again' })))
               })
 
               // failed to check time limits
@@ -197,6 +198,21 @@ function errorResponseToApi (error) {
     status: 401,
     message: error.message
   }
+}
+
+function goOnline (username) {
+  return new Promise((resolve, reject) => {
+    // user information we neet to place him/her online
+    const userMetaData = {
+      username,
+      computer_name: 'Kudakwashe Paradzayi',
+      login_time: `${moment().hours()}:${moment().minutes()}:${moment().seconds()}`,
+      login_date: new Date()
+    }
+
+    // Register the user online in the database
+    knex('online').insert(userMetaData).then(resolve).catch(reject)
+  })
 }
 module.exports = {
   findOne,
