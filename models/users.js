@@ -117,7 +117,7 @@ function getStudentProfile (username) {
 function checkValidity (dbUser, options) {
   return new Promise((resolve, reject) => {
     const { password, computer_name } = options
-    
+
     // does user exist?
     if (!dbUser) return reject({ message: 'invalid login details' })
     
@@ -233,9 +233,22 @@ function goOnline (user) {
     knex('online').insert(userMetaData).then(resolve).catch(reject)
   })
 }
+
+function logout (user) {
+  return new Promise((resolve, reject) => {
+    const username = user.username || '' // deal with undefineds
+
+    knex('online').where({ username }).del()
+      .then(() => knex('logsession').insert(user))
+      .then(resolve)
+      .catch(reject)
+  })
+}
+
 module.exports = {
   findOne,
   createUser,
   login,
+  logout,
   getAllUsers
 }
