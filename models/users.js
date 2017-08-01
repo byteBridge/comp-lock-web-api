@@ -39,7 +39,7 @@ function getAllUsers () {
 
 function login (credentials) {
   return new Promise((resolve, reject) => {
-    const { username, password } = credentials
+    const { username, password, computer_name } = credentials
     
     getStudentProfile(username)
       // successfully got profile
@@ -57,7 +57,10 @@ function login (credentials) {
              
               // successfully checked time limits
               .then(dbUser => {
-                goOnline(dbUser.username)
+                goOnline({
+                  username: dbUser.username,
+                  computer_name
+                })
                   .then(() => resolve(successResponseToApi(dbUser)))
                   .catch(() => reject(errorResponseToApi({ message: 'Something happened and we could not put you online. Please try again' })))
               })
@@ -202,12 +205,13 @@ function errorResponseToApi (error) {
   }
 }
 
-function goOnline (username) {
+function goOnline (user) {
+  const { username, computer_name } = user
   return new Promise((resolve, reject) => {
     // user information we neet to place him/her online
     const userMetaData = {
       username,
-      computer_name: 'Kudakwashe Paradzayi',
+      computer_name,
       login_time: `${moment().hours()}:${moment().minutes()}:${moment().seconds()}`,
       login_date: new Date()
     }
