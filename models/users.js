@@ -44,7 +44,7 @@ function login (credentials) {
     getStudentProfile(username)
       // successfully got profile
       .then(dbUser => {
-        checkValidity(dbUser, password)
+        checkValidity(dbUser, { password, computer_name })
 
          // successfully checked user validity
          .then(dbUser => {
@@ -53,6 +53,14 @@ function login (credentials) {
             // resolve the admin here
             return resolve(successResponseToApi(dbUser))
            } else {
+
+            /**
+             * If the computer_name is not specified, the user has used
+             * the web client to log in to the application.
+             * Respond with only the token and a bit of user info
+             */
+            if (!computer_name) return resolve(successResponseToApi(dbUser))
+
             checkTimeLimits(dbUser)
              
               // successfully checked time limits
@@ -106,14 +114,19 @@ function getStudentProfile (username) {
   })
 }
 
-function checkValidity (dbUser, password) {
+function checkValidity (dbUser, options) {
   return new Promise((resolve, reject) => {
+    const { password, computer_name } = options
+    
     // does user exist?
     if (!dbUser) return reject({ message: 'invalid login details' })
     
     // is user password valid?
     if (!comparePasswords(password, dbUser.password)) return reject({ message: 'invalid login details' })
     
+    // after passwords match and the user is using the web client resolve
+    if(!computer_name) return resolve(dbUser)
+
     // is user blocked?
     if (dbUser.blocked === true) return reject({ message: `We regret to inform you that your account qualifies to be blocked. Report by the librarian's desk to have it unblocked` })
     
