@@ -218,9 +218,8 @@ describe('login', () => {
           res.redirects.length.should.eql(0)
           res.status.should.eql(400)
           res.type.should.eql('application/json')
-          res.body.should.contain.keys('message', 'reason')
-          res.body.message.should.eql('bad request')
-          res.body.reason.should.eql("\"username\" is not allowed to be empty")
+          res.body.should.contain.keys('message')
+          res.body.message.should.eql("\"username\" is not allowed to be empty")
 
           // test for appropriate headers
           should.exist(res.header['cache-control'])
@@ -245,9 +244,8 @@ describe('login', () => {
           res.redirects.length.should.eql(0)
           res.status.should.eql(400)
           res.type.should.eql('application/json')
-          res.body.should.contain.keys('message', 'reason')
-          res.body.message.should.eql('bad request')
-          res.body.reason.should.eql("\"password\" is not allowed to be empty")
+          res.body.should.contain.keys('message')
+          res.body.message.should.eql("\"password\" is not allowed to be empty")
 
           // test for appropriate headers
           should.exist(res.header['cache-control'])
@@ -271,9 +269,8 @@ describe('login', () => {
           res.redirects.length.should.eql(0)
           res.status.should.eql(400)
           res.type.should.eql('application/json')
-          res.body.should.contain.keys('message', 'reason')
-          res.body.message.should.eql('bad request')
-          res.body.reason.should.eql("\"username\" is required")
+          res.body.should.contain.keys('message')
+          res.body.message.should.eql("\"username\" is required")
 
           // test for appropriate headers
           should.exist(res.header['cache-control'])
@@ -297,9 +294,8 @@ describe('login', () => {
           res.redirects.length.should.eql(0)
           res.status.should.eql(400)
           res.type.should.eql('application/json')
-          res.body.should.contain.keys('message', 'reason')
-          res.body.message.should.eql('bad request')
-          res.body.reason.should.eql("\"password\" is required")
+          res.body.should.contain.keys('message')
+          res.body.message.should.eql("\"password\" is required")
 
           // test for appropriate headers
           should.exist(res.header['cache-control'])
