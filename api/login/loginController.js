@@ -10,7 +10,7 @@ module.exports = (req, res) => {
       .header('Pragma', 'no-store')
 
     const { error, value } = validator.validate(req.body)
-    if (error) return buildResponse(res, 400, { message: 'bad request', reason: error.details[0].message})
+    if (error) return buildResponse(res, 400, { message: error.details[0].message})
 
     // validate desktop requests
     if (req.query.app) {
