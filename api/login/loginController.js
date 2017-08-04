@@ -12,6 +12,13 @@ module.exports = (req, res) => {
     const { error, value } = validator.validate(req.body)
     if (error) return buildResponse(res, 400, { message: 'bad request', reason: error.details[0].message})
 
+    // validate desktop requests
+    if (req.query.app) {
+      if (req.query.app === 'desktop' && !req.query.computer_name) {
+        return buildResponse(res, 400, { message: 'The name of the computer attempting to login has not been provided.'  })
+      }
+    }
+
     value.computer_name = req.query.computer_name
     userModel.login(value)
       .then(userData => {
