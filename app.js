@@ -8,7 +8,7 @@ const errorConfig = require('./config/error')
 const express = require('express')
 const app = express()
 
-appConfig.mount(app)
+appConfig.mount(app, express)
 routesConfig.mount(app)
 errorConfig.mount(app)
 

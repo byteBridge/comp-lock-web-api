@@ -8,6 +8,7 @@ module.exports.mount = (app, express) => {
 	const bodyParser = require('body-parser')
 	const logger = require('morgan')
 	const helmet = require('helmet')
+	const path = require('path')
 
 	app.set('port', process.env.PORT)
 
@@ -19,4 +20,5 @@ module.exports.mount = (app, express) => {
 	app.use(helmet())
 	app.use(bodyParser.urlencoded({ extended: false }))
 	app.use(bodyParser.json())
+	app.use('/static', express.static(path.join(__dirname, '..', 'client', 'static')))
 }
