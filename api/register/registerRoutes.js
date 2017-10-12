@@ -1,6 +1,7 @@
 const register = require('./registerController')
 const router = require('express').Router()
+const { authenticate } = require('../../utils/middlewareService')
 
-router.post('/', register)
+router.post('/', authenticate, register)
 
 module.exports = router
