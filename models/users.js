@@ -8,7 +8,10 @@ function findOne (username) {
 
       // success
       .then(user => {
-        if (user) { resolve(user[0]) }
+        if (user) {
+          if (user.length) delete user[0].password
+          resolve(user[0])
+        }
         else { resolve(null) }
       })
 
@@ -245,10 +248,27 @@ function logout (user) {
   })
 }
 
+function getSingleUserHistory (username) {
+  return new Promise((resolve, reject) => {
+    findOne(username).then(user => {
+      knex('logsession').select('*').where({ username })
+      .then(history => {
+        delete user.password
+        user.history = history
+        resolve(user)
+      })
+      .catch(reject)
+    })
+    .catch(reject)
+    
+  })
+}
+
 module.exports = {
   findOne,
   createUser,
   login,
   logout,
-  getAllUsers
+  getAllUsers,
+  getSingleUserHistory
 }
