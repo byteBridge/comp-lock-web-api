@@ -8,6 +8,11 @@ chai.use(chaiHttp)
 
 const knex = require('../../database')
 const { startServer } = require('../../test')
+const { generateToken } = require('../../utils/authService')
+const token = generateToken({
+  username: 'kudakwashe', // the admin account
+  exp: require('moment')().add(7, 'd').unix()
+})
 
 describe('login', () => {
   let server
@@ -45,6 +50,7 @@ describe('login', () => {
     it('should register a user', done => {
       chai.request(server)
         .post(registerUrl)
+        .query({ token })
         .send(user)
         .end((err, res) => {
           should.not.exist(err)
@@ -64,6 +70,7 @@ describe('login', () => {
 
       chai.request(server)
         .post(registerUrl)
+        .query({ token })
         .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
@@ -82,6 +89,7 @@ describe('login', () => {
 
       chai.request(server)
         .post(registerUrl)
+        .query({ token })
         .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
@@ -99,6 +107,7 @@ describe('login', () => {
 
       chai.request(server)
         .post(registerUrl)
+        .query({ token })
         .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
