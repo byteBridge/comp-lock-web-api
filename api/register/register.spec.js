@@ -82,6 +82,21 @@ describe('login', () => {
         })
     })
 
+    it('should fail to register a user if the client is not authenticated', done => {
+      chai.request(server)
+        .post(registerUrl)
+        .send(user)
+        .end((err, res) => {
+          should.exist(err)
+          res.redirects.length.should.eql(0)
+          res.status.should.eql(401)
+          res.type.should.eql('application/json')
+          res.body.should.contain.keys('message')
+          res.body.message.should.eql('No token provided.')
+          done()
+        })
+    })
+
     it('should fail if the username is not provided', done => {
       // remove the username
       const modifiedUser = Object.assign({}, user)
