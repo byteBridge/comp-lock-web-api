@@ -8,6 +8,11 @@ chai.use(chaiHttp)
 
 const knex = require('../../database')
 const { startServer } = require('../../test')
+const { generateToken } = require('../../utils/authService')
+const token = generateToken({
+  username: 'kudakwashe', // the admin account
+  exp: require('moment')().add(7, 'd').unix()
+})
 
 describe('login', () => {
   let server
@@ -45,6 +50,7 @@ describe('login', () => {
     it('should register a user', done => {
       chai.request(server)
         .post(registerUrl)
+        .query({ token })
         .send(user)
         .end((err, res) => {
           should.not.exist(err)
@@ -64,6 +70,7 @@ describe('login', () => {
 
       chai.request(server)
         .post(registerUrl)
+        .query({ token })
         .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
@@ -75,6 +82,21 @@ describe('login', () => {
         })
     })
 
+    it('should fail to register a user if the client is not authenticated', done => {
+      chai.request(server)
+        .post(registerUrl)
+        .send(user)
+        .end((err, res) => {
+          should.exist(err)
+          res.redirects.length.should.eql(0)
+          res.status.should.eql(401)
+          res.type.should.eql('application/json')
+          res.body.should.contain.keys('message')
+          res.body.message.should.eql('No token provided.')
+          done()
+        })
+    })
+
     it('should fail if the username is not provided', done => {
       // remove the username
       const modifiedUser = Object.assign({}, user)
@@ -82,6 +104,7 @@ describe('login', () => {
 
       chai.request(server)
         .post(registerUrl)
+        .query({ token })
         .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
@@ -99,6 +122,7 @@ describe('login', () => {
 
       chai.request(server)
         .post(registerUrl)
+        .query({ token })
         .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
