@@ -16,6 +16,7 @@ function handle404 (req, res, next) {
 function allowDomains (req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*')
 	res.setHeader('Access-Control-Request-Method', '*')
+	res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, DELETE')
 	res.setHeader('Access-Control-Allow-Headers', 'authorization, content-type')
 	if ( req.method === 'OPTIONS' ) {
 		res.writeHead(200);
