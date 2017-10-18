@@ -2,7 +2,7 @@
 
 const { verifyToken } = require('../utils/authService')
 const { buildResponse } = require('../utils/responseService')
-
+const { JWT_SECRET } = process.env
 /**
  * Handles errors for non existent routes
  */
@@ -15,6 +15,13 @@ function handle404 (req, res, next) {
  */
 function allowDomains (req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*')
+	res.setHeader('Access-Control-Request-Method', '*')
+	res.setHeader('Access-Control-Allow-Headers', 'authorization, content-type')
+	if ( req.method === 'OPTIONS' ) {
+		res.writeHead(200);
+		res.end();
+		return;
+	}
 	next()
 }
 
@@ -22,11 +29,10 @@ function allowDomains (req, res, next) {
  * Authentincate the user. Use when protecting api endpoints
  */
 function authenticate (req, res, next) {
-	// get the token ( from the query for now)
-	const token = req.query.token
+	const token = req.headers.authorization
 	if (!token) return buildResponse(res, 401, { message: 'No token provided.'})
 
-	verifyToken(token, process.env.JWT_SECRET, (err, decoded) => {
+	verifyToken(token, JWT_SECRET, (err, decoded) => {
 		if (err) return buildResponse(res, 401, { message: 'Unauthorized' })
 		
 		next()
