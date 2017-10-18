@@ -40,10 +40,73 @@ function unblockUser (req, res) {
     .catch(() => buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'}))
 }
 
+function getUserTypeTimelimits (req, res) {
+  const userType = req.params.userType
+  if (!userType) return buildResponse(res, 400, { message: 'supply the account type you want to get timelimits for' })
+  
+  userModel.getUserTypeTimelimits(userType)
+    .then((data) => buildResponse(res, 200, { message: 'success', data }))
+    .catch(() => buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'}))
+}
+
+function createUserTypeTimelimits (req, res) {
+  const { timeLimitsSchema } = require('./userValidation')
+  const { timeLimits, userType } = req.body
+  const opts = {}
+  const limits = timeLimits.split(':')
+  opts.hours = limits[0]
+  opts.minutes = limits[1]
+
+  // check if the timelimits provided are numbers in the allowed ranges
+  const { error, value } = timeLimitsSchema.validate(opts)
+  if (error) return buildResponse(res, 400, { message: error.details[0].message})
+  
+  userModel.createUserTypeTimelimits({ userType, timeLimits })
+    .then((data) => buildResponse(res, 200, {
+      message: 'successfully created time limits',
+      data: {
+        user_type: userType,
+        time_limit: timeLimits
+      }}))
+    .catch(({ message, status }) => buildResponse(res, status, { message }))
+}
+
+function updateUserTypeTimelimits (req, res) {
+  const { timeLimitsSchema } = require('./userValidation')
+  const { userType } = req.params
+  const opts = {}
+  const limits = timeLimits.split(':')
+  opts.hours = limits[0]
+  opts.minutes = limits[1]
+
+  // check if the timelimits provided are numbers in the allowed ranges
+  const { error, value } = timeLimitsSchema.validate(opts)
+  if (error) return buildResponse(res, 400, { message: error.details[0].message})
+  
+  userModel.updateUserTypeTimelimits({ userType, timeLimits })
+    .then((data) => buildResponse(res, 200, {
+      message: 'successfully updated time limits',
+      data: {
+        user_type: userType,
+        time_limit: timeLimits
+      }}))
+    .catch(({ message, status }) => buildResponse(res, status, { message }))
+}
+
+function getAllUserTypeTimelimits (req, res) {
+  userModel.getAllUserTypeTimelimits()
+    .then((data) => buildResponse(res, 200, { message: 'success', data }))
+    .catch(() => buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'}))
+}
+
 module.exports = {
   allUsers,
   singleUser,
   singleUserHistory,
   blockUser,
-  unblockUser
+  unblockUser,
+  getAllUserTypeTimelimits,
+  getUserTypeTimelimits,
+  createUserTypeTimelimits,
+  updateUserTypeTimelimits
 }
