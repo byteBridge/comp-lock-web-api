@@ -264,11 +264,25 @@ function getSingleUserHistory (username) {
   })
 }
 
+// Block or unblock a user. supply an object
+// in the form { username, block }
+// where username is the username for the user
+// and block is the boolean value of the
+// blocked status you want to give the user
+function blockUser ({ username, block }) {
+  return new Promise((resolve, reject) => {
+    knex('users').where({ username }).update({ blocked: block })
+      .then(resolve)
+      .catch(reject)
+  })
+}
+
 module.exports = {
   findOne,
   createUser,
   login,
   logout,
   getAllUsers,
-  getSingleUserHistory
+  getSingleUserHistory,
+  blockUser
 }
