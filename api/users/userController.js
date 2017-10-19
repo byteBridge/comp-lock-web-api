@@ -52,6 +52,10 @@ function getUserTypeTimelimits (req, res) {
 function createUserTypeTimelimits (req, res) {
   const { timeLimitsSchema } = require('./userValidation')
   const { timeLimits, userType } = req.body
+
+  if (!timeLimits) return buildResponse(res, 400, { message: 'Supply the timelimits for the new user type' })
+  if (!userType || userType.length < 3) return buildResponse(res, 400, { message: 'Supply the account type for the new user type. It is at least 3 letter long.' })
+  
   const opts = {}
   const limits = timeLimits.split(':')
   opts.hours = limits[0]
@@ -73,6 +77,7 @@ function createUserTypeTimelimits (req, res) {
 
 function updateUserTypeTimelimits (req, res) {
   const { timeLimitsSchema } = require('./userValidation')
+  const { timeLimits } = req.body
   const { userType } = req.params
   const opts = {}
   const limits = timeLimits.split(':')
