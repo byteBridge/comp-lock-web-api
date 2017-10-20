@@ -4,6 +4,7 @@ const router = require('express').Router()
 const {
     allUsers,
     singleUser,
+    deleteUser,
     singleUserHistory,
     blockUser,
     unblockUser,
@@ -25,6 +26,7 @@ router.put('/timelimits/:userType', authenticate, updateUserTypeTimelimits)
 
 // The specific user stuff
 router.get('/:username', authenticate, singleUser)
+router.delete('/:username', authenticate, deleteUser)
 router.put('/:username/block', authenticate, blockUser)
 router.put('/:username/unblock', authenticate, unblockUser)
 router.get('/:username/history', authenticate, singleUserHistory)
