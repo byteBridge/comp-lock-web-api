@@ -7,6 +7,13 @@ function singleUser (req, res) {
     .catch(err => buildResponse(res, 500, err))
 }
 
+function deleteUser (req, res) {
+  const { username } = req.params
+  userModel.deleteUser(username)
+    .then(users => buildResponse(res, 200, { message: 'Successfully deleted user account' }))
+    .catch(err => buildResponse(res, 500, err))
+}
+
 function allUsers (req, res) {
   userModel.getAllUsers()
     .then(users => buildResponse(res, 200, { users }))
@@ -80,6 +87,8 @@ function updateUserTypeTimelimits (req, res) {
   const { timeLimits } = req.body
   const { userType } = req.params
   const opts = {}
+
+  if (!timeLimits) return buildResponse(res, 400, { message: 'Supply the timelimits for the new user type' })
   const limits = timeLimits.split(':')
   opts.hours = limits[0]
   opts.minutes = limits[1]
@@ -107,6 +116,7 @@ function getAllUserTypeTimelimits (req, res) {
 module.exports = {
   allUsers,
   singleUser,
+  deleteUser,
   singleUserHistory,
   blockUser,
   unblockUser,
