@@ -20,6 +20,12 @@ function allUsers (req, res) {
     .catch(err => buildResponse(res, 500, err))
 }
 
+function allOnlineUsers (req, res) {
+  userModel.getAllOnlineUsers()
+    .then(users => buildResponse(res, 200, { users }))
+    .catch(err => buildResponse(res, 500, err))
+}
+
 function singleUserHistory (req, res) {
   const username = req.params.username
   if (!username) return buildResponse(res, 400, { message: 'supply the username of the user whose history you want to view.'})
@@ -115,6 +121,7 @@ function getAllUserTypeTimelimits (req, res) {
 
 module.exports = {
   allUsers,
+  allOnlineUsers,
   singleUser,
   deleteUser,
   singleUserHistory,
