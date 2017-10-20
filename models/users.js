@@ -48,6 +48,27 @@ function getAllUsers () {
   })
 }
 
+function getAllOnlineUsers () {
+  return new Promise((resolve, reject) => {
+    const requiredFields = [
+      'users.username',
+      'users.f_name',
+      'users.s_name',
+      'users.type',
+      'online.login_time',
+      'online.login_date',
+      'online.computer_name'
+    ]
+    knex('online')
+      .leftJoin('users', 'users.username', '=', 'online.username')
+      .select(...requiredFields)
+      .then(users => {
+        resolve(users)
+      })
+      .catch(reject)
+  })
+}
+
 function login (credentials) {
   return new Promise((resolve, reject) => {
     const { username, password, computer_name } = credentials
@@ -195,7 +216,7 @@ function checkTimeLimits (dbUser) {
           , minutesLimit = time_limit[1]
         
         // Check if user exhausted allocated time
-        if (hours >= hourLimit && hourLimit !=='00') return reject({ message: 'We regret to inform you that you have used up the time allocated to your account. Please come back tomorrow for more research.'})
+        if (hours >= hourLimit && Number(hourLimit) !== 0) return reject({ message: 'We regret to inform you that you have used up the time allocated to your account. Please come back tomorrow for more research.'})
         if (minutes >= minutesLimit) return reject({ message: 'We regret to inform you that you have used up the time allocated to your account. Please come back tomorrow for more research.'})
         
         const usedTime = `${hours}:${minutes}:${seconds}`
@@ -335,6 +356,7 @@ module.exports = {
   login,
   logout,
   getAllUsers,
+  getAllOnlineUsers,
   getSingleUserHistory,
   blockUser,
   getAllUserTypeTimelimits,
