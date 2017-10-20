@@ -31,6 +31,14 @@ function createUser (user) {
   })
 }
 
+// deletes the user from the sytem. Supply username
+function deleteUser (username = '') {
+  return new Promise((resolve, reject) => {
+    knex('users').where({username}).del()
+      .then(resolve)
+      .catch(reject)
+  })
+}
 
 function getAllUsers () {
   return new Promise((resolve, reject) => {
@@ -323,6 +331,7 @@ function getAllUserTypeTimelimits () {
 module.exports = {
   findOne,
   createUser,
+  deleteUser,
   login,
   logout,
   getAllUsers,
