@@ -3,6 +3,7 @@
 const router = require('express').Router()
 const {
     allUsers,
+    allOnlineUsers,
     singleUser,
     deleteUser,
     singleUserHistory,
@@ -17,6 +18,7 @@ const { authenticate } = require('../../utils/middlewareService')
 
 // Returns a list of users
 router.get('/', authenticate, allUsers)
+router.get('/online', authenticate, allOnlineUsers)
 
 // The timelimits stuff
 router.post('/timelimits/new', authenticate, createUserTypeTimelimits)
