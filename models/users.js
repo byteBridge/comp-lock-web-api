@@ -128,6 +128,8 @@ function getStudentProfile (username) {
       'users.s_name',
       'users.password',
       'users.blocked',
+      'users.gender',
+      'users.created_at',
       'users.type',
       'online.login_time',
       'time_limit.time_limit'
