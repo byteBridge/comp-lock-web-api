@@ -40,6 +40,33 @@ function deleteUser (username = '') {
   })
 }
 
+// Chages the yser password ater verifying that the supplied password
+// is correct. Duply { username, currentPassword, newPassword }
+function changePassword ({ username, currentPassword, newPassword }) {
+  return new Promise((resolve, reject) => {
+    knex('users').where({ username }).select('password')
+      .then(user => {
+        if (!comparePasswords(currentPassword, user[0].password)) return reject({ message: 'invalid login details', status: 401 })
+
+        // user password match
+        const password =  hashedPassword(newPassword)
+        return knex('users').where({ username }).update({ password, updated_at: new Date() })
+          .then(() => {
+            return resolve()
+          })
+          .catch((err) => {
+            return reject({ message: 'An error occured', status: 500 })
+          })
+      })
+      .catch((err) => {
+        // this one comes from a failed password comparison
+        if (err.status) return reject(err)
+        // sever error, non of the user's business
+        reject({ message: 'An error occured', status: 500 })
+      })
+  })
+}
+
 function getAllUsers () {
   return new Promise((resolve, reject) => {
     knex('users').select()
@@ -361,6 +388,7 @@ module.exports = {
   getAllOnlineUsers,
   getSingleUserHistory,
   blockUser,
+  changePassword,
   getAllUserTypeTimelimits,
   getUserTypeTimelimits,
   createUserTypeTimelimits,
