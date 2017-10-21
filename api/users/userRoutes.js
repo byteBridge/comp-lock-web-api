@@ -8,6 +8,7 @@ const {
     deleteUser,
     singleUserHistory,
     blockUser,
+    changePassword,
     unblockUser,
     getAllUserTypeTimelimits,
     getUserTypeTimelimits,
@@ -31,6 +32,7 @@ router.get('/:username', authenticate, singleUser)
 router.delete('/:username', authenticate, deleteUser)
 router.put('/:username/block', authenticate, blockUser)
 router.put('/:username/unblock', authenticate, unblockUser)
+router.put('/:username/password', authenticate, changePassword)
 router.get('/:username/history', authenticate, singleUserHistory)
 
 module.exports = router
