@@ -35,6 +35,18 @@ function singleUserHistory (req, res) {
     .catch(err => buildResponse(res, 500, err))
 }
 
+
+function changePassword (req, res) {
+  const username = req.params.username
+  const { currentPassword, newPassword } = req.body
+  if (!username) return buildResponse(res, 400, { message: 'supply the username of the user whose password you want to change.'})
+  if (!currentPassword && !newPassword) return buildResponse(res, 400, { message: 'supply the current password and/or the new password.'})
+  
+  userModel.changePassword({ username, currentPassword, newPassword })
+  .then(() => buildResponse(res, 200, { message: 'successfully changed password user account' }))
+  .catch(({ message, status }) => buildResponse(res, status, { message }))
+}
+
 function blockUser (req, res) {
   const username = req.params.username
   if (!username) return buildResponse(res, 400, { message: 'supply the username of the user you want to block'})
@@ -126,6 +138,7 @@ module.exports = {
   deleteUser,
   singleUserHistory,
   blockUser,
+  changePassword,
   unblockUser,
   getAllUserTypeTimelimits,
   getUserTypeTimelimits,
