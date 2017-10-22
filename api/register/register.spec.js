@@ -50,7 +50,7 @@ describe('login', () => {
     it('should register a user', done => {
       chai.request(server)
         .post(registerUrl)
-        .query({ token })
+        .set({ Authorization: token })
         .send(user)
         .end((err, res) => {
           should.not.exist(err)
@@ -70,7 +70,7 @@ describe('login', () => {
 
       chai.request(server)
         .post(registerUrl)
-        .query({ token })
+        .set({ Authorization: token })
         .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
@@ -104,7 +104,7 @@ describe('login', () => {
 
       chai.request(server)
         .post(registerUrl)
-        .query({ token })
+        .set({ Authorization: token })
         .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
@@ -122,7 +122,7 @@ describe('login', () => {
 
       chai.request(server)
         .post(registerUrl)
-        .query({ token })
+        .set({ Authorization: token })
         .send(modifiedUser)
         .end((err, res) => {
           should.exist(err)
