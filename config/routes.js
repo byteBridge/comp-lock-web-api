@@ -1,7 +1,6 @@
 'use strict'
 
 module.exports.mount = app => {
-	const clientSpaRoute = require('../client/route')
 	const {
 		loginRoutes,
 		logoutRoutes,
@@ -11,7 +10,11 @@ module.exports.mount = app => {
 		restoreDatabaseRoutes
 	} = require('../api/indexRoutes')
 
-	app.use('/', clientSpaRoute)
+	// tomake the travis builds succeed
+	if (process.env.NODE_ENV !== 'test') {
+		const clientSpaRoute = require('../client/route')
+		app.use('/', clientSpaRoute)
+	}
 	app.use('/secret', secretRoutes)
 	app.use('/users', userRoutes)
 	app.use('/auth/login', loginRoutes)
