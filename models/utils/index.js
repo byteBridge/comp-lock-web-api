@@ -14,6 +14,14 @@ function successResponseToApi (dbUser) {
   }
 }
 
+function errorResponseToApi (error) {
+  return {
+    status: 401,
+    message: error.message
+  }
+}
+
 module.exports = {
-  successResponseToApi
+  successResponseToApi,
+  errorResponseToApi
 }

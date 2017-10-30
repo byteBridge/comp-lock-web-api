@@ -1,5 +1,5 @@
 const { hashedPassword, comparePasswords } = require('../utils/authService')
-const { successResponseToApi } = require('./utils')
+const { successResponseToApi, errorResponseToApi } = require('./utils')
 const knex = require('../database')
 const moment = require('moment')
 
@@ -225,13 +225,6 @@ async function checkTimeLimits (dbUser) {
   }
 }
 
-function errorResponseToApi (error) {
-  return {
-    status: 401,
-    message: error.message
-  }
-}
-
 async function goOnline (user) {
   const { username, computer_name } = user
   try {
@@ -250,31 +243,28 @@ async function goOnline (user) {
   }
 }
 
-function logout (user) {
-  return new Promise((resolve, reject) => {
+async function logout (user) {
+  try {
     const username = user.username || '' // deal with undefineds
-
-    knex('online').where({ username }).del()
-      .then(() => knex('logsession').insert(user))
-      .then(resolve)
-      .catch(reject)
-  })
+    await knex('online').where({ username }).del()
+    await knex('logsession').insert(user)
+  } catch (err) {
+    throw err
+  }
 }
 
-function getSingleUserHistory (username) {
-  return new Promise((resolve, reject) => {
-    findOne(username).then(user => {
-      knex('logsession').select('*').where({ username })
-      .then(history => {
-        delete user.password
-        user.history = history
-        resolve(user)
-      })
-      .catch(reject)
-    })
-    .catch(reject)
-    
-  })
+async function getSingleUserHistory (username) {
+  try {
+    const user = await findOne(username)
+    if(user) {
+      const history = await knex('logsession').select('*').where({ username })
+      delete user.password
+      user.history = history
+      return user
+    }
+  } catch (err) {
+    throw err
+  }
 }
 
 // Block or unblock a user. supply an object
