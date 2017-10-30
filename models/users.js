@@ -272,57 +272,55 @@ async function getSingleUserHistory (username) {
 // where username is the username for the user
 // and block is the boolean value of the
 // blocked status you want to give the user
-function blockUser ({ username, block }) {
-  return new Promise((resolve, reject) => {
-    knex('users').where({ username }).update({ blocked: block })
-      .then(resolve)
-      .catch(reject)
-  })
+async function blockUser ({ username, block }) {
+  try {
+    return await knex('users').where({ username }).update({ blocked: block })
+  } catch (err) {
+    throw err
+  }
 }
 
 // Gets the time limits of a particula account type
 // Supply the account type
-function getUserTypeTimelimits ( userType ) {
-  return new Promise((resolve, reject) => {
-    knex('time_limit').select('*').where({ user_type: userType })
-      .then(data => resolve(data[0]))
-      .catch(reject)
-  })
+async function getUserTypeTimelimits ( userType ) {
+  try {
+    const timeLimits = await knex('time_limit').select('*').where({ user_type: userType })
+    return timeLimits[0]
+  } catch (err) {
+    throw err
+  }
 }
 
 // creates a new time limit in the database
 // Supply an object { userType, timeLimits }
-function createUserTypeTimelimits ({ userType, timeLimits }) {
-  return new Promise((resolve, reject) => {
-    knex('time_limit').insert({ user_type: userType, time_limit: timeLimits })
-      .then(resolve)
-      .catch(err => {
-        if (err.code === '23505') return reject({ message: 'An account type with that name already exists. Try using a different name', status: 422})
-        reject({ message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>', code: 500 })
-      })
-  })
+async function createUserTypeTimelimits ({ userType, timeLimits }) {
+  try {
+    await knex('time_limit').insert({ user_type: userType, time_limit: timeLimits })
+  } catch (err) {
+    if (err.code === '23505') throw { message: 'An account type with that name already exists. Try using a different name', status: 422 }
+    throw { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>', code: 500 }
+  }
 }
 
 // creates a new time limit in the database
 // Supply an object { userType, timeLimits }
-function updateUserTypeTimelimits ({ userType, timeLimits }) {
-  return new Promise((resolve, reject) => {
-    knex('time_limit').where({ user_type: userType }).update({ time_limit: timeLimits })
-      .then(resolve)
-      .catch(err => {
-        reject({ message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>', code: 500 })
-      })
-  })
+async function updateUserTypeTimelimits ({ userType, timeLimits }) {
+  try {
+    return await knex('time_limit').where({ user_type: userType }).update({ time_limit: timeLimits })
+  } catch(err) {
+    throw { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>', code: 500 }
+  }
 }
 
 // returns an array with all the userType timelimits
-function getAllUserTypeTimelimits () {
-  return new Promise((resolve, reject) => {
-    knex('time_limit').select('*')
-      .then(resolve)
-      .catch(reject)
-  })
+async function getAllUserTypeTimelimits () {
+  try {
+   return await knex('time_limit').select('*')
+  } catch (err) {
+    throw err
+  }
 }
+
 module.exports = {
   findOne,
   createUser,
