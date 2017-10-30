@@ -23,23 +23,14 @@ async function createUser (user) {
     throw err
   }
 }
-/*
-function createUser (user) {
-  return new Promise((resolve, reject) => {
-    user.password = hashedPassword(user.password)
-    knex('users').insert(user).returning('*')
-      .then(resolve)
-      .catch(reject)
-  })
-}
-*/
+
 // deletes the user from the sytem. Supply username
-function deleteUser (username = '') {
-  return new Promise((resolve, reject) => {
-    knex('users').where({username}).del()
-      .then(resolve)
-      .catch(reject)
-  })
+async function deleteUser (username = '') {
+  try {
+    await knex('users').where({username}).del()
+  } catch (err) {
+    throw err
+  }
 }
 
 // Chages the yser password ater verifying that the supplied password
