@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken')
 * Checks if the password provided by the user matches the password
 * in the database
 */
-function comparePasswords (reqPass, dbPass) {
-  return bcrypt.compareSync(reqPass, dbPass) 
+async function comparePasswords (reqPass, dbPass) {
+  return await bcrypt.compare(reqPass, dbPass) 
 }
 
 /**
