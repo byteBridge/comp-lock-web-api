@@ -15,6 +15,15 @@ async function findOne (username) {
   }
 }
 
+async function createUser (user) {
+  try {
+    user.password = hashedPassword(user.password)
+    return await knex('users').insert(user).returning('*')
+  } catch (err) {
+    throw err
+  }
+}
+/*
 function createUser (user) {
   return new Promise((resolve, reject) => {
     user.password = hashedPassword(user.password)
@@ -23,7 +32,7 @@ function createUser (user) {
       .catch(reject)
   })
 }
-
+*/
 // deletes the user from the sytem. Supply username
 function deleteUser (username = '') {
   return new Promise((resolve, reject) => {
