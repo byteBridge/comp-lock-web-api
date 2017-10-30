@@ -250,9 +250,9 @@ function errorResponseToApi (error) {
   }
 }
 
-function goOnline (user) {
+async function goOnline (user) {
   const { username, computer_name } = user
-  return new Promise((resolve, reject) => {
+  try {
     // user information we neet to place him/her online
     const userMetaData = {
       username,
@@ -262,8 +262,10 @@ function goOnline (user) {
     }
   
     // Register the user online in the database
-    knex('online').insert(userMetaData).returning('*').then(resolve).catch(reject)
-  })
+    await knex('online').insert(userMetaData).returning('*')
+  } catch (err) {
+    throw err
+  }
 }
 
 function logout (user) {
