@@ -1,80 +1,108 @@
 const userModel = require('../../models/users')
 const { buildResponse } = require('../../utils/responseService')
 
-function singleUser (req, res) {
-  userModel.findOne(req.params.username)
-    .then(user => buildResponse(res, 200, { user }))
-    .catch(err => buildResponse(res, 500, err))
+async function singleUser (req, res) {
+  try {
+    const user = userModel.findOne(req.params.username)
+    buildResponse(res, 200, { user })
+  } catch (err) {
+    buildResponse(res, 500, err)
+  }
 }
 
-function deleteUser (req, res) {
-  const { username } = req.params
-  userModel.deleteUser(username)
-    .then(users => buildResponse(res, 200, { message: 'Successfully deleted user account' }))
-    .catch(err => buildResponse(res, 500, err))
+async function deleteUser (req, res) {
+  try {
+    const { username } = req.params
+    await userModel.deleteUser(username)
+    buildResponse(res, 200, { message: 'Successfully deleted user account' })
+  } catch (err) {
+    buildResponse(res, 500, err)
+  }
+  
 }
 
-function allUsers (req, res) {
-  userModel.getAllUsers()
-    .then(users => buildResponse(res, 200, { users }))
-    .catch(err => buildResponse(res, 500, err))
+async function allUsers (req, res) {
+  try {
+    const users = await userModel.getAllUsers()
+    buildResponse(res, 200, { users })
+  } catch (err) {
+    buildResponse(res, 500, err)
+  }
 }
 
-function allOnlineUsers (req, res) {
-  userModel.getAllOnlineUsers()
-    .then(users => buildResponse(res, 200, { users }))
-    .catch(err => buildResponse(res, 500, err))
+async function allOnlineUsers (req, res) {
+  try {
+    const users  = await userModel.getAllOnlineUsers()
+    buildResponse(res, 200, { users })
+  } catch (err) {
+    buildResponse(res, 500, err)
+  }
 }
 
-function singleUserHistory (req, res) {
+async function singleUserHistory (req, res) {
   const username = req.params.username
   if (!username) return buildResponse(res, 400, { message: 'supply the username of the user whose history you want to view.'})
 
-  userModel.getSingleUserHistory(username)
-    .then(history => buildResponse(res, 200, { user: history }))
-    .catch(err => buildResponse(res, 500, err))
+  try {
+    const userWithHistory = await userModel.getSingleUserHistory(username)
+    buildResponse(res, 200, { user: userWithHistory })
+  } catch (err) {
+    buildResponse(res, 500, err)
+  }
 }
 
 
-function changePassword (req, res) {
+async function changePassword (req, res) {
   const username = req.params.username
   const { currentPassword, newPassword } = req.body
   if (!username) return buildResponse(res, 400, { message: 'supply the username of the user whose password you want to change.'})
   if (!currentPassword && !newPassword) return buildResponse(res, 400, { message: 'supply the current password and/or the new password.'})
   
-  userModel.changePassword({ username, currentPassword, newPassword })
-  .then(() => buildResponse(res, 200, { message: 'successfully changed password user account' }))
-  .catch(({ message, status }) => buildResponse(res, status, { message }))
+  try {
+    await userModel.changePassword({ username, currentPassword, newPassword })
+    buildResponse(res, 200, { message: 'successfully changed password user account' })  
+  } catch ({ message, status }) {
+    buildResponse(res, status, { message })
+  }
 }
 
-function blockUser (req, res) {
+async function blockUser (req, res) {
   const username = req.params.username
   if (!username) return buildResponse(res, 400, { message: 'supply the username of the user you want to block'})
 
-  userModel.blockUser({ username, block: true })
-  .then(() => buildResponse(res, 200, { message: 'successfully blocked user account' }))
-  .catch(() => buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'}))
+  try {
+    await userModel.blockUser({ username, block: true })
+    buildResponse(res, 200, { message: 'successfully blocked user account' })  
+  } catch (err) {
+    buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'})
+  }
 }
 
-function unblockUser (req, res) {
+async function unblockUser (req, res) {
   const username = req.params.username
   if (!username) return buildResponse(res, 400, { message: 'supply the username of the user you want to block'})
 
-  userModel.blockUser({ username, block: false })
-    .then(() => buildResponse(res, 200, { message: 'successfully unblocked user account' }))
-    .catch(() => buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'}))
+  try {
+    await userModel.blockUser({ username, block: false })
+    buildResponse(res, 200, { message: 'successfully unblocked user account' })
+  } catch (err) {
+    buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'})
+  }
 }
 
-function getUserTypeTimelimits (req, res) {
+async function getUserTypeTimelimits (req, res) {
   const userType = req.params.userType
   if (!userType) return buildResponse(res, 400, { message: 'supply the account type you want to get timelimits for' })
   
-  userModel.getUserTypeTimelimits(userType)
-    .then((data) => buildResponse(res, 200, { message: 'success', data }))
-    .catch(() => buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'}))
+  try {
+    const data = await userModel.getUserTypeTimelimits(userType)
+    buildResponse(res, 200, { message: 'success', data })
+  } catch (err) {
+    buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'})
+  }
 }
 
-function createUserTypeTimelimits (req, res) {
+async function createUserTypeTimelimits (req, res) {
   const { timeLimitsSchema } = require('./userValidation')
   const { timeLimits, userType } = req.body
 
@@ -90,17 +118,20 @@ function createUserTypeTimelimits (req, res) {
   const { error, value } = timeLimitsSchema.validate(opts)
   if (error) return buildResponse(res, 400, { message: error.details[0].message})
   
-  userModel.createUserTypeTimelimits({ userType, timeLimits })
-    .then((data) => buildResponse(res, 200, {
+  try {
+    const data = await userModel.createUserTypeTimelimits({ userType, timeLimits })
+    buildResponse(res, 200, {
       message: 'successfully created time limits',
       data: {
         user_type: userType,
         time_limit: timeLimits
-      }}))
-    .catch(({ message, status }) => buildResponse(res, status, { message }))
+      }})
+  } catch ({ message, status }) {
+    buildResponse(res, status, { message })
+  }
 }
 
-function updateUserTypeTimelimits (req, res) {
+async function updateUserTypeTimelimits (req, res) {
   const { timeLimitsSchema } = require('./userValidation')
   const { timeLimits } = req.body
   const { userType } = req.params
@@ -115,20 +146,26 @@ function updateUserTypeTimelimits (req, res) {
   const { error, value } = timeLimitsSchema.validate(opts)
   if (error) return buildResponse(res, 400, { message: error.details[0].message})
   
-  userModel.updateUserTypeTimelimits({ userType, timeLimits })
-    .then((data) => buildResponse(res, 200, {
+  try {
+    const data = await userModel.updateUserTypeTimelimits({ userType, timeLimits })
+    buildResponse(res, 200, {
       message: 'successfully updated time limits',
       data: {
         user_type: userType,
         time_limit: timeLimits
-      }}))
-    .catch(({ message, status }) => buildResponse(res, status, { message }))
+      }})
+  } catch ({ message, status }) {
+    buildResponse(res, status, { message })
+  }
 }
 
-function getAllUserTypeTimelimits (req, res) {
-  userModel.getAllUserTypeTimelimits()
-    .then((data) => buildResponse(res, 200, { message: 'success', data }))
-    .catch(() => buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'}))
+async function getAllUserTypeTimelimits (req, res) {
+ try {
+   const data = await userModel.getAllUserTypeTimelimits()
+   buildResponse(res, 200, { message: 'success', data })
+ } catch (err) {
+  buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'})
+ }
 }
 
 module.exports = {
