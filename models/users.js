@@ -117,8 +117,8 @@ async function login (credentials) {
   }
 }
 
-function getStudentProfile (username) {
-  return new Promise((resolve, reject) => {
+async function getStudentProfile (username) {
+  try {
     const requiredFields = [
       'users.username',
       'users.f_name',
@@ -132,17 +132,16 @@ function getStudentProfile (username) {
       'time_limit.time_limit'
     ]
 
-    knex('users')
-      .leftJoin('online', 'users.username', '=', 'online.username')
-      .leftJoin('time_limit', 'users.type', '=', 'time_limit.user_type')
-      .select(...requiredFields)
-      .where('users.username', '=', username)
-
-      .then(res => {
-        resolve(res[0])
-      })
-      .catch(reject)
-  })
+    // return the user profile
+    return await knex('users')
+    .leftJoin('online', 'users.username', '=', 'online.username')
+    .leftJoin('time_limit', 'users.type', '=', 'time_limit.user_type')
+    .select(...requiredFields)
+    .where('users.username', '=', username)
+    .first()
+  } catch (err) {
+    throw err
+  }
 }
 
 function checkValidity (dbUser, options) {
