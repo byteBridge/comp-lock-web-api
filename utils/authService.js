@@ -26,8 +26,8 @@ function verifyToken (token, secretOrKey, options, callback) {
 /**
  * Hash the password for secure storage in the database 
  */
-function hashedPassword (password) {
-  return bcrypt.hashSync(password, 10)
+async function hashedPassword (password) {
+  return await bcrypt.hash(password, 10)
 }
 
 module.exports = {
