@@ -1,4 +1,5 @@
-const { hashedPassword, comparePasswords, generateToken } = require('../utils/authService')
+const { hashedPassword, comparePasswords } = require('../utils/authService')
+const { successResponseToApi } = require('./utils')
 const knex = require('../database')
 const moment = require('moment')
 
@@ -17,7 +18,7 @@ async function findOne (username) {
 
 async function createUser (user) {
   try {
-    user.password = hashedPassword(user.password)
+    user.password = await hashedPassword(user.password)
     return await knex('users').insert(user).returning('*')
   } catch (err) {
     throw err
@@ -35,29 +36,24 @@ async function deleteUser (username = '') {
 
 // Chages the yser password ater verifying that the supplied password
 // is correct. Duply { username, currentPassword, newPassword }
-function changePassword ({ username, currentPassword, newPassword }) {
-  return new Promise((resolve, reject) => {
-    knex('users').where({ username }).select('password')
-      .then(user => {
-        if (!comparePasswords(currentPassword, user[0].password)) return reject({ message: 'invalid login details', status: 401 })
+async function changePassword ({ username, currentPassword, newPassword }) {
+  try {
+    const user = await knex('users').where({ username }).select('password').first()
+    if (!comparePasswords(currentPassword, user.password)) throw { message: 'invalid login details', status: 401 }
 
-        // user password match
-        const password =  hashedPassword(newPassword)
-        return knex('users').where({ username }).update({ password, updated_at: new Date() })
-          .then(() => {
-            return resolve()
-          })
-          .catch((err) => {
-            return reject({ message: 'An error occured', status: 500 })
-          })
-      })
-      .catch((err) => {
-        // this one comes from a failed password comparison
-        if (err.status) return reject(err)
-        // sever error, non of the user's business
-        reject({ message: 'An error occured', status: 500 })
-      })
-  })
+    // user password match
+    const password =  await hashedPassword(newPassword)
+    try {
+      await knex('users').where({ username }).update({ password, updated_at: new Date() })
+    } catch (err) {
+      throw { message: 'An error occured', status: 500 }
+    }
+   } catch(err) {
+      // this one comes from a failed password comparison
+      if (err.status) throw err
+      // sever error, non of the user's business
+      throw { message: 'An error occured', status: 500 }
+  }
 }
 
 function getAllUsers () {
@@ -227,19 +223,6 @@ async function checkTimeLimits (dbUser) {
     return dbUser
   } catch (err) {
     throw err
-  }
-}
-
-function successResponseToApi (dbUser) {
-  // do not send the password to the client
-  delete dbUser.password
-  
-  return {
-    user: dbUser,
-    token: generateToken({
-      username: dbUser.username,
-      exp: moment().add(7, 'd').unix()
-    })
   }
 }
 
