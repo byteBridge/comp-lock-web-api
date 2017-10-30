@@ -56,12 +56,12 @@ async function changePassword ({ username, currentPassword, newPassword }) {
   }
 }
 
-function getAllUsers () {
-  return new Promise((resolve, reject) => {
-    knex('users').select()
-      .then(resolve)
-      .catch(reject)
-  })
+async function getAllUsers () {
+ try {
+    return await knex('users').select()
+  } catch (err) {
+    throw err
+  }
 }
 
 function getAllOnlineUsers () {
