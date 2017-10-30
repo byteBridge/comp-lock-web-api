@@ -2,25 +2,18 @@ const { hashedPassword, comparePasswords, generateToken } = require('../utils/au
 const knex = require('../database')
 const moment = require('moment')
 
-function findOne (username) {
-  return new Promise((resolve, reject) => {
-    knex('users').select().where({username})
+async function findOne (username) {
+  try {
+    const user = await knex('users').select().where({ username }).first()
+    if (user) delete user.password
+    return user
 
-      // success
-      .then(user => {
-        if (user) {
-          if (user.length) delete user[0].password
-          resolve(user[0])
-        }
-        else { resolve(null) }
-      })
-
-      // error
-      .catch(err => reject(err))
-  })
+    // user not found
+    return null
+  } catch (err) {
+    throw err
+  }
 }
-
-
 
 function createUser (user) {
   return new Promise((resolve, reject) => {
