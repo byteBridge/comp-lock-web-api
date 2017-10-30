@@ -144,29 +144,32 @@ async function getStudentProfile (username) {
   }
 }
 
-function checkValidity (dbUser, options) {
-  return new Promise((resolve, reject) => {
+
+async function checkValidity (dbUser, options) {
+  try {
     const { password, computer_name } = options
 
     // does user exist?
-    if (!dbUser) return reject({ message: 'invalid login details' })
+    if (!dbUser) throw { message: 'invalid login details' }
     
     // is user password valid?
-    if (!comparePasswords(password, dbUser.password)) return reject({ message: 'invalid login details' })
+    if (!comparePasswords(password, dbUser.password)) throw ({ message: 'invalid login details' })
     
     // after passwords match and the user is using the web client resolve
-    if(!computer_name) return resolve(dbUser)
+    if(!computer_name) return dbUser
 
     // is user blocked?
-    if (dbUser.blocked === true) return reject({ message: `We regret to inform you that your account qualifies to be blocked. Report by the librarian's desk to have it unblocked` })
+    if (dbUser.blocked === true) throw { message: `We regret to inform you that your account qualifies to be blocked. Report by the librarian's desk to have it unblocked` }
     
     // is user online?
-    if (dbUser.login_time !== null) return reject({ message: 'Your account is already signed in on another computer. Sign out and try again.' })
+    if (dbUser.login_time !== null) throw { message: 'Your account is already signed in on another computer. Sign out and try again.' }
     
     // if all is well, pass on the user to the
     // next function in the promise chain
-    resolve(dbUser)
-  })
+    return dbUser
+  } catch (err) {
+    throw err
+  }
 }
 
 function checkTimeLimits (dbUser) {
