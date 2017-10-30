@@ -89,55 +89,32 @@ function getAllOnlineUsers () {
   })
 }
 
-function login (credentials) {
-  return new Promise((resolve, reject) => {
+async function login (credentials) {
+  try {
     const { username, password, computer_name } = credentials
+    const studentProfile = await getStudentProfile(username)
+    const validatedUser = await checkValidity(studentProfile, { password, computer_name })
+
+    // if admin resolve imediately
+    if (validatedUser.type === 'administrator') return successResponseToApi(validatedUser)
+
+    /**
+     * If the computer_name is not specified, the user has used
+     * the web client to log in to the application.
+     * Respond with only the token and a bit of user info
+     */
+
+    if (!computer_name) return successResponseToApi(validatedUser)
     
-    getStudentProfile(username)
-      // successfully got profile
-      .then(dbUser => {
-        checkValidity(dbUser, { password, computer_name })
-
-         // successfully checked user validity
-         .then(dbUser => {
-           if (dbUser.type === 'administrator') {
-
-            // resolve the admin here
-            return resolve(successResponseToApi(dbUser))
-           } else {
-
-            /**
-             * If the computer_name is not specified, the user has used
-             * the web client to log in to the application.
-             * Respond with only the token and a bit of user info
-             */
-            if (!computer_name) return resolve(successResponseToApi(dbUser))
-
-            checkTimeLimits(dbUser)
-             
-              // successfully checked time limits
-              .then(dbUser => {
-                goOnline({
-                  username: dbUser.username,
-                  computer_name
-                })
-                  .then(() => resolve(successResponseToApi(dbUser)))
-                  .catch(() => reject(errorResponseToApi({ message: 'Something happened and we could not put you online. Please try again' })))
-              })
-
-              // failed to check time limits
-              .catch((error) => reject(errorResponseToApi(error)))
-           }
-         })
-
-        // User is not valid for login
-        .catch((error) => reject(errorResponseToApi(error)))
-      })
-
-      // failed to get user profile
-      .catch(() => reject())
-
-    })
+    const userWithTimeLimits = await checkTimeLimits(validatedUser)
+    
+    await goOnline({ username, computer_name })
+    
+    // finally resolve for the student here
+    return successResponseToApi(userWithTimeLimits)
+  } catch (err) {
+    throw err.message ? errorResponseToApi(err) : err
+  }
 }
 
 function getStudentProfile (username) {
@@ -282,9 +259,9 @@ function goOnline (user) {
       login_time: `${moment().hours()}:${moment().minutes()}:${moment().seconds()}`,
       login_date: new Date()
     }
-
+  
     // Register the user online in the database
-    knex('online').insert(userMetaData).then(resolve).catch(reject)
+    knex('online').insert(userMetaData).returning('*').then(resolve).catch(reject)
   })
 }
 
