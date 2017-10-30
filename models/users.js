@@ -64,8 +64,8 @@ async function getAllUsers () {
   }
 }
 
-function getAllOnlineUsers () {
-  return new Promise((resolve, reject) => {
+async function getAllOnlineUsers () {
+  try {
     const requiredFields = [
       'users.username',
       'users.f_name',
@@ -75,14 +75,13 @@ function getAllOnlineUsers () {
       'online.login_date',
       'online.computer_name'
     ]
-    knex('online')
+
+    return await knex('online')
       .leftJoin('users', 'users.username', '=', 'online.username')
       .select(...requiredFields)
-      .then(users => {
-        resolve(users)
-      })
-      .catch(reject)
-  })
+  } catch(err) {
+    throw err
+  }
 }
 
 async function login (credentials) {
