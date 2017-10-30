@@ -39,7 +39,7 @@ async function deleteUser (username = '') {
 async function changePassword ({ username, currentPassword, newPassword }) {
   try {
     const user = await knex('users').where({ username }).select('password').first()
-    if (!comparePasswords(currentPassword, user.password)) throw { message: 'invalid login details', status: 401 }
+    if (! await comparePasswords(currentPassword, user.password)) throw { message: 'invalid login details', status: 401 }
 
     // user password match
     const password =  await hashedPassword(newPassword)
@@ -149,7 +149,7 @@ async function checkValidity (dbUser, options) {
     if (!dbUser) throw { message: 'invalid login details' }
     
     // is user password valid?
-    if (!comparePasswords(password, dbUser.password)) throw ({ message: 'invalid login details' })
+    if (! await comparePasswords(password, dbUser.password)) throw ({ message: 'invalid login details' })
     
     // after passwords match and the user is using the web client resolve
     if(!computer_name) return dbUser
