@@ -7,10 +7,7 @@ async function findOne (username) {
   try {
     const user = await knex('users').select().where({ username }).first()
     if (user) delete user.password
-    return user
-
-    // user not found
-    return null
+    return user || null
   } catch (err) {
     throw err
   }
