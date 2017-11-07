@@ -40,8 +40,20 @@ function authenticate (req, res, next) {
 	})
 }
 
+function authenticateAdmin (req, res, next) {
+	const token = req.headers.authorization
+	if (!token) return buildResponse(res, 401, { message: 'No token provided.'})
+
+	verifyToken(token, JWT_SECRET, (err, decoded) => {
+		if (err) return buildResponse(res, 401, { message: 'Unauthorized' })
+		if (decoded.type !== 'administrator') return buildResponse(res, 401, { message: 'Access denied. Login as administrator to be able to create an account.' })
+		next()
+	})
+}
+
 module.exports = {
 	handle404,
 	allowDomains,
-	authenticate
+	authenticate,
+	authenticateAdmin
 }
