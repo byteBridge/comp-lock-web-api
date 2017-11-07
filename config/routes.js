@@ -9,12 +9,13 @@ module.exports.mount = app => {
 		userRoutes,
 		restoreDatabaseRoutes
 	} = require('../api/indexRoutes')
-
+	const usersRoutes = require('../models/users/user.routes')
 	// tomake the travis builds succeed
 	if (process.env.NODE_ENV !== 'test') {
 		const clientSpaRoute = require('../client/route')
 		app.use('/', clientSpaRoute)
 	}
+	app.use('/api/v1/users', usersRoutes)
 	app.use('/secret', secretRoutes)
 	app.use('/users', userRoutes)
 	app.use('/auth/login', loginRoutes)
