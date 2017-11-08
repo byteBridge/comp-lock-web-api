@@ -96,44 +96,45 @@ describe('#User.create()', () => {
     let errorMessages = ['"type" is required']
     await failToCreateWithMissingKey(newUser, 'type', ...errorMessages)
   })
+
+
+  /**
+   * @description This function is intended to attemp to create a user with all keys (fields) but having some keys with no values
+   * @param {*} newUser The user to be created. Ideal with all the required key fields
+   * @param {*} value The key (field) of the newUser object that is to be made empty
+   * @param {*} errorMessages A list of error messages resulting from joi validations
+   */
+  async function failToCreateWithMissingValue (newUser, value, ...errorMessages) {
+    let userWithoutValue = Object.assign({}, newUser)
+    userWithoutValue[value] = ''
+    try {
+      const createdUser = await User.create(userWithoutValue)
+    } catch (error) {
+      should.exist(error)
+      errorMessages.forEach(message => {
+        error.message.should.eql('Validation errors occured')
+        error.errors.find(e => e.message == message).message.should.eql(message)
+      })
+    }
+  }
+
+  /**
+   * @description This function is intended to attemp to create a user with missing keys (fields)
+   * @param {*} newUser The user to be created. Ideal with all the required key fields
+   * @param {*} key The key (field) of the newUser object that is to be deleted
+   * @param {*} errorMessages A list of error messages resulting from joi validations
+   */
+  async function failToCreateWithMissingKey (newUser, key, ...errorMessages) {
+    let userWithoutKey = Object.assign({}, newUser)
+    delete userWithoutKey[key]
+    try {
+      const createdUser = await User.create(userWithoutKey)
+    } catch (error) {
+      should.exist(error)
+      errorMessages.forEach(message => {
+        error.message.should.eql('Validation errors occured')
+        error.errors.find(e => e.message == message).message.should.eql(message)
+      })
+    }
+  }
 })
-
-/**
- * @description This function is intended to attemp to create a user with all keys (fields) but having some keys with no values
- * @param {*} newUser The user to be created. Ideal with all the required key fields
- * @param {*} value The key (field) of the newUser object that is to be made empty
- * @param {*} errorMessages A list of error messages resulting from joi validations
- */
-async function failToCreateWithMissingValue (newUser, value, ...errorMessages) {
-  let userWithoutValue = Object.assign({}, newUser)
-  userWithoutValue[value] = ''
-  try {
-    const createdUser = await User.create(userWithoutValue)
-  } catch (error) {
-    should.exist(error)
-    errorMessages.forEach(message => {
-      error.message.should.eql('Validation errors occured')
-      error.errors.find(e => e.message == message).message.should.eql(message)
-    })
-  }
-}
-
-/**
- * @description This function is intended to attemp to create a user with missing keys (fields)
- * @param {*} newUser The user to be created. Ideal with all the required key fields
- * @param {*} key The key (field) of the newUser object that is to be deleted
- * @param {*} errorMessages A list of error messages resulting from joi validations
- */
-async function failToCreateWithMissingKey (newUser, key, ...errorMessages) {
-  let userWithoutKey = Object.assign({}, newUser)
-  delete userWithoutKey[key]
-  try {
-    const createdUser = await User.create(userWithoutKey)
-  } catch (error) {
-    should.exist(error)
-    errorMessages.forEach(message => {
-      error.message.should.eql('Validation errors occured')
-      error.errors.find(e => e.message == message).message.should.eql(message)
-    })
-  }
-}
