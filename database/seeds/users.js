@@ -18,6 +18,25 @@ const users = [
     s_name: 'Gumbo',
     gender: 'M',
     email: 'grod56@gmail.com'
+  },
+  {
+    username: 'denzel',
+    password: hashedPassword('makombeshushi'),
+    type: 'student',
+    f_name: 'Denzel',
+    s_name: 'Makombe',
+    gender: 'M',
+    email: 'dm@gmail.com'
+  },
+  {
+    username: 'stephen',
+    password: hashedPassword('kundicme'),
+    type: 'student',
+    f_name: 'Stephen',
+    s_name: 'Makombe',
+    gender: 'M',
+    email: 'djstavo@gmail.com',
+    blocked: true
   }
 ]
 
