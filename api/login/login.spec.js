@@ -331,4 +331,32 @@ describe('login', () => {
           done()
     })
   })
-})})
+  
+  it('should fail when the user has used up all his/her allocated time', done => {
+    const user = {
+      username: 'denzel',
+      password: 'makombeshushi'
+    }
+
+    chai.request(server)
+      .post(loginUrl)     
+      .send(user)
+      .query({ computer_name: 'Computer1' })
+      .end((err, res) => {
+        should.exist(err)
+        res.redirects.length.should.eql(0)
+        res.status.should.eql(401)
+        res.type.should.eql('application/json')
+        res.body.should.contain.keys('message')
+        res.body.message.should.eql("We regret to inform you that you have used up the time allocated to your account. Please come back tomorrow for more research.")
+
+        // test for appropriate headers
+        should.exist(res.header['cache-control'])
+        should.exist(res.header['pragma'])
+        res.header['cache-control'].should.eql('no-store')
+        res.header['pragma'].should.eql('no-store')
+        done()
+      })
+    })
+  })
+})
