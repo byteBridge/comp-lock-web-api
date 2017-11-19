@@ -24,16 +24,18 @@ describe('#User.create()', () => {
   }
 
   it('should successfully create a new use', async () => {
-    const createdUser = await User.create(newUser)
+    const user = new User()
+    const createdUser = await user.create(newUser)
     createdUser.should.be.a('object')
     createdUser.should.contain.keys(...Object.keys(newUser), 'created_at', 'updated_at')
   })
 
   it('should fail if the user already exists', async () => {
+    const user = new User()
     let userInDb = Object.assign({}, newUser)
     userInDb.username = 'kudakwashe'
     try {
-      const createdUser = await User.create(userInDb)
+      const createdUser = await user.create(userInDb)
     } catch (error) {
       should.exist(error)
       error.message.should.eql('User already exists in the database')
@@ -105,10 +107,11 @@ describe('#User.create()', () => {
    * @param {*} errorMessages A list of error messages resulting from joi validations
    */
   async function failToCreateWithMissingValue (newUser, value, ...errorMessages) {
+    const user = new User()
     let userWithoutValue = Object.assign({}, newUser)
     userWithoutValue[value] = ''
     try {
-      const createdUser = await User.create(userWithoutValue)
+      const createdUser = await user.create(userWithoutValue)
     } catch (error) {
       should.exist(error)
       errorMessages.forEach(message => {
@@ -125,10 +128,11 @@ describe('#User.create()', () => {
    * @param {*} errorMessages A list of error messages resulting from joi validations
    */
   async function failToCreateWithMissingKey (newUser, key, ...errorMessages) {
+    const user = new User()
     let userWithoutKey = Object.assign({}, newUser)
     delete userWithoutKey[key]
     try {
-      const createdUser = await User.create(userWithoutKey)
+      const createdUser = await user.create(userWithoutKey)
     } catch (error) {
       should.exist(error)
       errorMessages.forEach(message => {
@@ -154,7 +158,8 @@ describe('#User.login()', () => {
   const studentCredentialsForWeb = { username: 'garikai', password: 'rodneygg' }
 
   it('should login an administrator', async () => {
-      const authUser = await User.login(adminCredentials)
+      const user = new User()
+      const authUser = await user.login(adminCredentials)
       should.exist(authUser)
       authUser.should.contain.keys(...['token', 'username', 'f_name', 's_name', 'type', 'gender', 'email', 'blocked', 'created_at', 'updated_at'])
       authUser.should.not.contain.keys('password')
@@ -162,22 +167,25 @@ describe('#User.login()', () => {
 
 
   it('should log in a student from the web ui', async () => {
-    const response = await User.login(studentCredentialsForWeb)
+    const user = new User()
+    const response = await user.login(studentCredentialsForWeb)
     should.exist(response)
     response.should.contain.keys(...['token', 'username', 'f_name', 's_name', 'type', 'gender', 'email', 'blocked', 'created_at', 'updated_at', 'computer_name', 'time_limit'])
     response.should.not.contain.keys('password')
   })
 
   it('should log in a student from the desktop', async () => {
-      const response = await User.login(studentCredentialsForDesktop)
+      const user = new User()
+      const response = await user.login(studentCredentialsForDesktop)
       should.exist(response)
       response.should.contain.keys(...['token', 'username', 'f_name', 's_name', 'type', 'gender', 'email', 'blocked', 'created_at', 'updated_at', 'computer_name', 'login_time', 'remaining_time', 'time_limit', 'used_time'])
       response.should.not.contain.keys('password')
   })
 
   it('should not log in a student from the desktop who has used time', async () => {
+    const user = new User()
     try {
-      await User.login(studentCredentialsForDesktopTimeUp)
+      await user.login(studentCredentialsForDesktopTimeUp)
     } catch (error) {
       should.exist(error)
       error.should.contain.keys('status', 'message')
@@ -198,8 +206,9 @@ describe('#User.login()', () => {
   })
 
   it('should not log in a student from the desktop who been blocked', async () => {
+    const user = new User()
     try {
-      await User.login(studentCredentialsForDesktopBlocked)
+      await user.login(studentCredentialsForDesktopBlocked)
     } catch (error) {
       should.exist(error)
       error.should.contain.keys('status', 'message')
@@ -209,9 +218,10 @@ describe('#User.login()', () => {
   })
 
   it('should not log in a student from the desktop when his/her account is online on another computer', async () => {
+    const user = new User()
     try {
-      await User.login(studentCredentialsForDesktop)
-      await User.login(studentCredentialsForDesktop)
+      await user.login(studentCredentialsForDesktop)
+      await user.login(studentCredentialsForDesktop)
     } catch (error) {
       should.exist(error)
       error.should.contain.keys('status', 'message')
@@ -229,9 +239,10 @@ describe('#User.login()', () => {
    */
   async function failToSigninWithMissingValue (credentials, key, ...errorMessages) {
     let credentialsWithoutValue = Object.assign({}, credentials)
+    const user = new User()
     credentialsWithoutValue[key] = ''
     try {
-      await User.login(credentialsWithoutValue)
+      await user.login(credentialsWithoutValue)
     } catch (error) {
       should.exist(error)
       errorMessages.forEach(message => {
