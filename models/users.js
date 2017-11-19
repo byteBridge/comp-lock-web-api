@@ -1,8 +1,30 @@
-const { hashedPassword, comparePasswords } = require('../utils/authService')
-const { successResponseToApi, errorResponseToApi } = require('./utils')
+const { hashedPassword, comparePasswords, generateToken } = require('../utils/authService')
+// const { successResponseToApi, errorResponseToApi } = require('./utils')
 const knex = require('../database')
 const moment = require('moment')
 
+//********************* Util functions *************************/
+function successResponseToApi (dbUser) {
+  // do not send the password to the client
+  delete dbUser.password
+  return {
+    user: dbUser,
+    token: generateToken({
+      username: dbUser.username,
+      exp: moment().add(7, 'd').unix()
+    })
+  }
+
+  return dbUser
+}
+
+function errorResponseToApi (error) {
+  return {
+    status: 401,
+    message: error.message
+  }
+}
+//***************************************************************/
 async function findOne (username) {
   try {
     const user = await knex('users').select().where({ username }).first()

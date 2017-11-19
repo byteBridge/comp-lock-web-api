@@ -1,4 +1,4 @@
-const userModel = require('../../models/users')
+const userModel = require('../../models/users.js')
 const validator = require('./registerValidation')
 const { buildResponse } = require('../../utils/responseService') 
 

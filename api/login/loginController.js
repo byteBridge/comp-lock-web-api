@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const userModel = require('../../models/users')
+const userModel = require('../../models/users.js')
 const { buildResponse } = require('../../utils/responseService')
 const validator = require('./loginValidation')
 
