@@ -153,4 +153,4 @@ User.prototype.goOnline = async function goOnline (user) {
   }
 }
 
-module.exports = new User()
+module.exports = User
