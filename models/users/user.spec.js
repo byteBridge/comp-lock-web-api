@@ -138,3 +138,107 @@ describe('#User.create()', () => {
     }
   }
 })
+
+
+describe('#User.login()', () => {
+  beforeEach(() => knex.migrate.rollback()
+    .then(() => knex.migrate.latest())
+    .then(() => knex.seed.run())
+  )
+
+  afterEach(() => knex.migrate.rollback())
+  const adminCredentials = { username: 'kudakwashe', password: 'paradzayi' }
+  const studentCredentialsForDesktop = { username: 'garikai', password: 'rodneygg', computer_name: 'computer1' }
+  const studentCredentialsForDesktopTimeUp = { username: 'denzel', password: 'makombeshushi', computer_name: 'computer1' }
+  const studentCredentialsForDesktopBlocked = { username: 'stephen', password: 'kundicme', computer_name: 'computer2' }
+  const studentCredentialsForWeb = { username: 'garikai', password: 'rodneygg' }
+
+  it('should login an administrator', async () => {
+      const authUser = await User.login(adminCredentials)
+      should.exist(authUser)
+      authUser.should.contain.keys(...['token', 'username', 'f_name', 's_name', 'type', 'gender', 'email', 'blocked', 'created_at', 'updated_at'])
+      authUser.should.not.contain.keys('password')
+  })
+
+
+  it('should log in a student from the web ui', async () => {
+    const response = await User.login(studentCredentialsForWeb)
+    should.exist(response)
+    response.should.contain.keys(...['token', 'username', 'f_name', 's_name', 'type', 'gender', 'email', 'blocked', 'created_at', 'updated_at', 'computer_name', 'time_limit'])
+    response.should.not.contain.keys('password')
+  })
+
+  it('should log in a student from the desktop', async () => {
+      const response = await User.login(studentCredentialsForDesktop)
+      should.exist(response)
+      response.should.contain.keys(...['token', 'username', 'f_name', 's_name', 'type', 'gender', 'email', 'blocked', 'created_at', 'updated_at', 'computer_name', 'login_time', 'remaining_time', 'time_limit', 'used_time'])
+      response.should.not.contain.keys('password')
+  })
+
+  it('should not log in a student from the desktop who has used time', async () => {
+    try {
+      await User.login(studentCredentialsForDesktopTimeUp)
+    } catch (error) {
+      should.exist(error)
+      error.should.contain.keys('status', 'message')
+      error.status.should.eql(401)
+      error.message.should.eql('We regret to inform you that you have used up the time allocated to your account. Please come back tomorrow for more research.')
+    }
+  })
+
+
+  it('should not log in a with an empty username', async () => {
+    let errorMessages = ['"username" is not allowed to be empty', '"username" length must be at least 6 characters long']
+    await failToSigninWithMissingValue(studentCredentialsForDesktop, 'username', ...errorMessages)
+  })
+
+  it('should not log in a with an empty password', async () => {
+    let errorMessages = ['"password" is not allowed to be empty', '"password" length must be at least 8 characters long']
+    await failToSigninWithMissingValue(studentCredentialsForDesktop, 'password', ...errorMessages)
+  })
+
+  it('should not log in a student from the desktop who been blocked', async () => {
+    try {
+      await User.login(studentCredentialsForDesktopBlocked)
+    } catch (error) {
+      should.exist(error)
+      error.should.contain.keys('status', 'message')
+      error.status.should.eql(401)
+      error.message.should.eql(`We regret to inform you that your account qualifies to be blocked. Report by the librarian's desk to have it unblocked`)
+    }
+  })
+
+  it('should not log in a student from the desktop when his/her account is online on another computer', async () => {
+    try {
+      await User.login(studentCredentialsForDesktop)
+      await User.login(studentCredentialsForDesktop)
+    } catch (error) {
+      should.exist(error)
+      error.should.contain.keys('status', 'message')
+      error.status.should.eql(401)
+      error.message.should.eql(`Your account is already signed in on computer: ${studentCredentialsForDesktop.computer_name}`)
+    }
+  })
+
+
+  /**
+   * @description This function is intended to attemp to create a user with missing keys (fields)
+   * @param {*} newUser The user to be created. Ideal with all the required key fields
+   * @param {*} key The key (field) of the newUser object that is to be deleted
+   * @param {*} errorMessages A list of error messages resulting from joi validations
+   */
+  async function failToSigninWithMissingValue (credentials, key, ...errorMessages) {
+    let credentialsWithoutValue = Object.assign({}, credentials)
+    credentialsWithoutValue[key] = ''
+    try {
+      await User.login(credentialsWithoutValue)
+    } catch (error) {
+      should.exist(error)
+      errorMessages.forEach(message => {
+        error.message.should.eql('Validation errors occured')
+        error.errors.find(e => e.message == message).message.should.eql(message)
+      })
+    }
+  }
+
+})
