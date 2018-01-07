@@ -24,7 +24,7 @@ const studentToken =  generateToken({
   exp: require('moment')().add(7, 'd').unix()
 })
 
-describe('POST /api/v1/users/new', () => {
+describe('register a new user', () => {
   let server
   const registerUrl ='/api/v1/users/new'
 
@@ -56,7 +56,7 @@ describe('POST /api/v1/users/new', () => {
 
   afterEach(() => knex.migrate.rollback())
   
-  describe('POST /register', () => {
+  describe('POST /api/v1/users/new', () => {
     it('should register a user', async () => {
       chai.request(server)
         .post(registerUrl)
@@ -115,7 +115,7 @@ describe('POST /api/v1/users/new', () => {
           res.status.should.eql(401)
           res.type.should.eql('application/json')
           res.body.should.contain.keys('message')
-          res.body.message.should.eql('Access denied. Login as administrator to be able to create an account.')
+          res.body.message.should.eql('Access denied. Login as administrator to continue.')
         })
     })
 
@@ -169,3 +169,9 @@ describe('POST /api/v1/users/new', () => {
     })
   })
 })
+
+/** TODO => Test 
+ *  1. {*} /api/v1/users/username/*
+ *  2. GET /api/v1/users/online
+ *  3. {*} /api/v1/users/timelimits/*
+ */
