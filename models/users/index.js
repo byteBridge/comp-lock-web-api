@@ -1,7 +1,7 @@
 const knex = require('../../database')
 const joi = require('./user.validation')
 const moment = require('moment')
-const { generateToken, comparePasswords } = require('../../utils/authService')
+const { generateToken, comparePasswords, hashedPassword } = require('../../utils/authService')
 const { checkTimeUsage, successResponseToApi, errorResponseToApi } = require('../utils')
 
 module.exports = class User {
@@ -165,6 +165,146 @@ module.exports = class User {
       // Register the user online in the database
       await knex('online').insert(userMetaData).returning('*')
     } catch (err) {
+      throw err
+    }
+  }
+
+  /************************ borrowed methods from original users.js file */
+  // deletes the user from the sytem. Supply username
+  async deleteUser (username = '') {
+    try {
+      await knex('users').where({username}).del()
+    } catch (err) {
+      throw err
+    }
+  }
+
+  // Chages the yser password ater verifying that the supplied password
+  // is correct. Duply { username, currentPassword, newPassword }
+  async changePassword ({ username, currentPassword, newPassword }) {
+    try {
+      const user = await knex('users').where({ username }).select('password').first()
+      if (! await comparePasswords(currentPassword, user.password)) throw { message: 'invalid login details', status: 401 }
+
+      // user password match
+      const password =  await hashedPassword(newPassword)
+      try {
+        await knex('users').where({ username }).update({ password, updated_at: new Date() })
+      } catch (err) {
+        throw { message: 'An error occured', status: 500 }
+      }
+    } catch(err) {
+        // this one comes from a failed password comparison
+        if (err.status) throw err
+        // sever error, non of the user's business
+        throw { message: 'An error occured', status: 500 }
+    }
+  }
+
+  async getAllUsers () {
+    try {
+      return await knex('users').select()
+    } catch (err) {
+      throw err
+    }
+  }
+
+
+  async logout (user) {
+    try {
+      const username = user.username || '' // deal with undefineds
+      await knex('online').where({ username }).del()
+      await knex('logsession').insert(user)
+    } catch (err) {
+      throw err
+    }
+  }
+
+  async  getSingleUserHistory (username) {
+    try {
+      const user = await this.findOne(username)
+      if(user) {
+        const history = await knex('logsession').select('*').where({ username })
+        delete user.password
+        user.history = history
+        return user
+      }
+    } catch (err) {
+      throw err
+    }
+  }
+
+  // Block or unblock a user. supply an object
+  // in the form { username, block }
+  // where username is the username for the user
+  // and block is the boolean value of the
+  // blocked status you want to give the user
+  async  blockUser ({ username, block }) {
+    try {
+      return await knex('users').where({ username }).update({ blocked: block })
+    } catch (err) {
+      throw err
+    }
+  }
+
+  // Gets the time limits of a particula account type
+  // Supply the account type
+  async  getUserTypeTimelimits ( userType ) {
+    try {
+      const timeLimits = await knex('time_limit').select('*').where({ user_type: userType })
+      return timeLimits[0]
+    } catch (err) {
+      throw err
+    }
+  }
+
+  // creates a new time limit in the database
+  // Supply an object { userType, timeLimits }
+  async  createUserTypeTimelimits ({ userType, timeLimits }) {
+    try {
+      await knex('time_limit').insert({ user_type: userType, time_limit: timeLimits })
+    } catch (err) {
+      if (err.code === '23505') throw { message: 'An account type with that name already exists. Try using a different name', status: 422 }
+      throw { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>', code: 500 }
+    }
+  }
+
+  // creates a new time limit in the database
+  // Supply an object { userType, timeLimits }
+  async  updateUserTypeTimelimits ({ userType, timeLimits }) {
+    try {
+      return await knex('time_limit').where({ user_type: userType }).update({ time_limit: timeLimits })
+    } catch(err) {
+      throw { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>', code: 500 }
+    }
+  }
+
+  // returns an array with all the userType timelimits
+  async  getAllUserTypeTimelimits () {
+    try {
+    return await knex('time_limit').select('*')
+    } catch (err) {
+      throw err
+    }
+  }
+
+
+  async getAllOnlineUsers () {
+    try {
+      const requiredFields = [
+        'users.username',
+        'users.f_name',
+        'users.s_name',
+        'users.type',
+        'online.login_time',
+        'online.login_date',
+        'online.computer_name'
+      ]
+
+      return await knex('online')
+        .leftJoin('users', 'users.username', '=', 'online.username')
+        .select(...requiredFields)
+    } catch(err) {
       throw err
     }
   }
