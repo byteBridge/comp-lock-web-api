@@ -126,7 +126,7 @@ async function getUserTypeTimelimits (req, res) {
 }
 
 async function createUserTypeTimelimits (req, res) {
-  const { timeLimitsSchema } = require('./userValidation')
+  const { timeLimitsSchema } = require('./user.validation')
   const { timeLimits, userType } = req.body
 
   if (!timeLimits) return buildResponse(res, 400, { message: 'Supply the timelimits for the new user type' })
@@ -156,7 +156,7 @@ async function createUserTypeTimelimits (req, res) {
 }
 
 async function updateUserTypeTimelimits (req, res) {
-  const { timeLimitsSchema } = require('./userValidation')
+  const { timeLimitsSchema } = require('./user.validation')
   const { timeLimits } = req.body
   const { userType } = req.params
   const opts = {}

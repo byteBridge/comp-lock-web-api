@@ -19,3 +19,8 @@ validation.login = joi.object().keys({
   password: joi.string().min(8).max(25).required(),
   computer_name: joi.string(),
 })
+
+validation.timeLimitsSchema = joi.object().keys({
+  hours: joi.number().min(0).max(5).required(),
+  minutes: joi.number().min(0).max(59).required()
+})
