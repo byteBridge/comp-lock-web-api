@@ -253,3 +253,72 @@ describe('#User.login()', () => {
   }
 
 })
+
+describe('#User.findOne()', () => {
+  beforeEach(() => knex.migrate.rollback()
+    .then(() => knex.migrate.latest())
+    .then(() => knex.seed.run())
+  )
+
+  afterEach(() => knex.migrate.rollback())
+  let existingUser = {
+    username: 'garikai',
+    type: 'student',
+    f_name: 'Garikai',
+    s_name: 'Gumbo',
+    gender: 'Male',
+    email: 'grod56@gmail.com'
+  }
+ 
+  
+  it('should return a single user from the database', async () => {
+    const user = new User()
+    const foundUser = await user.findOne('garikai')
+    foundUser.should.be.a('object')
+    foundUser.should.not.contain.keys('password')
+    foundUser.should.contain.keys(...Object.keys(existingUser), 'created_at', 'updated_at')
+    for (key in existingUser) {
+      foundUser[key].should.eql(existingUser[key])
+    }
+  })
+
+  it('should fail if username key is not provided', async () => {
+    const user = new User()
+    try {
+      const foundUser = await user.findOne()
+    } catch (error) {
+      should.exist(error)
+      error.should.contain.keys('message')
+      error.message.should.eql('Username is required')
+    }
+  })
+
+
+  it('should fail if username key is an empty string', async () => {
+    const user = new User()
+    try {
+      const foundUser = await user.findOne('')
+    } catch (error) {
+      should.exist(error)
+      error.should.contain.keys('message')
+      error.message.should.eql('Username is required')
+    }
+  })
+
+
+  it('should fail if the username username does not match the user in the database', async () => {
+    const user = new User()
+    try {
+      const foundUser = await user.findOne('tainashenasheltan')
+    } catch (error) {
+      should.exist(error)
+      error.should.contain.keys('message')
+      error.message.should.eql('The username provided did not match any user in our records')
+    }
+  })
+})
+
+/** TODO => Test 
+ * 1. getStudentProfile()
+ * 2. checkTimeLimits()
+ */
