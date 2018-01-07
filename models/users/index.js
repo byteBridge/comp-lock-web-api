@@ -58,6 +58,22 @@ module.exports = class User {
     
   }
 
+  /**
+   * @param {*} username The username of the required student
+   * @returns Returns a user from the database
+   */
+  async findOne (username) {
+    try {
+      if (!username || username === '') throw { message: 'Username is required' }
+      const foundUser = await knex('users').where({ username }).select('*')
+      if (foundUser.length === 0) throw { message: 'The username provided did not match any user in our records' }
+      delete foundUser[0].password
+      return foundUser[0]
+    } catch (error) {
+      throw error
+    }
+  }
+  /*********************************************PRIVATE METHODS***********************************/
 
   async getStudentProfile (username) {
     try {
