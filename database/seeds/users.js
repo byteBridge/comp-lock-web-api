@@ -7,7 +7,7 @@ const users = [
     type: 'administrator',
     f_name: 'Kudakwashe',
     s_name: 'Paradzayi',
-    gender: 'M',
+    gender: 'Male',
     email: 'kgparadzayi@gmail.com'
   },
   {
@@ -16,7 +16,7 @@ const users = [
     type: 'student',
     f_name: 'Garikai',
     s_name: 'Gumbo',
-    gender: 'M',
+    gender: 'Male',
     email: 'grod56@gmail.com'
   },
   {
@@ -25,7 +25,7 @@ const users = [
     type: 'student',
     f_name: 'Denzel',
     s_name: 'Makombe',
-    gender: 'M',
+    gender: 'Male',
     email: 'dm@gmail.com'
   },
   {
@@ -34,7 +34,7 @@ const users = [
     type: 'student',
     f_name: 'Stephen',
     s_name: 'Makombe',
-    gender: 'M',
+    gender: 'Male',
     email: 'djstavo@gmail.com',
     blocked: true
   }
