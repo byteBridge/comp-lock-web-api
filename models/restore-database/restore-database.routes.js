@@ -1,4 +1,4 @@
-const restoreDatabaseController = require('./restore-databaseController')
+const restoreDatabaseController = require('./restore-database.controller')
 const router = require('express').Router()
 
 router.post('/', restoreDatabaseController)
