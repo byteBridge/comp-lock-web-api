@@ -46,7 +46,7 @@ function authenticateAdmin (req, res, next) {
 
 	verifyToken(token, JWT_SECRET, (err, decoded) => {
 		if (err) return buildResponse(res, 401, { message: 'Unauthorized' })
-		if (decoded.type !== 'administrator') return buildResponse(res, 401, { message: 'Access denied. Login as administrator to be able to create an account.' })
+		if (decoded.type !== 'administrator') return buildResponse(res, 401, { message: 'Access denied. Login as administrator to continue.' })
 		next()
 	})
 }
