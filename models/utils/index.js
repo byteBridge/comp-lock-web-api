@@ -6,6 +6,7 @@ function successResponseToApi (dbUser) {
   delete dbUser.password
   dbUser.token = generateToken({
     username: dbUser.username,
+    type: dbUser.type,
     exp: moment().add(7, 'd').unix()
   })
 
