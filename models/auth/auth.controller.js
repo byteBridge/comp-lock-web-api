@@ -38,7 +38,8 @@ module.exports.logout = async (req, res) => {
   if (error) return buildResponse(res, 400, { message: 'bad request', reason: error.details[0].message})
 
   try {
-    await userModel.logout(value)
+    const userApi = new userModel()
+    await userApi.logout(value)
     buildResponse(res, 200, { message: 'Successfully logged out'})
   } catch (error) {
     buildResponse(res, 500, { message: 'Something aweful happend and we couldn\'t log out', error })
