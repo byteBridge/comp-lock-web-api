@@ -1,0 +1,29 @@
+const ComputerModel = require('./')
+const { buildResponse } = require('../../utils/responseService')
+
+async function create (req, res) {
+  try {
+    let newComputer = req.body
+    const computerApi = new ComputerModel()
+    const createdComputer = await computerApi.create(newComputer)
+    buildResponse(res, 200, { message: 'successfully created computer.', computer: createdComputer })
+  } catch (error) {
+    if (error.status) return buildResponse(res, error.status, { message: error.message, error })
+    buildResponse(res, 500, { message: 'something happened', error })
+  }
+}
+
+async function getAllComputers (req, res) {
+  try {
+    const computerApi = new ComputerModel()
+    const computers = await computerApi.getAllComputers()
+    buildResponse(res, 200, { computers })
+  } catch (err) {
+    buildResponse(res, 500, err)
+  }
+}
+
+module.exports = {
+  create,
+  getAllComputers
+}
