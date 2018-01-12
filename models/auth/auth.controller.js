@@ -1,15 +1,15 @@
 const jwt = require('jsonwebtoken')
-const userModel = require('../../models/users')
+const userModel = require('../users/index')
 const { buildResponse } = require('../../utils/responseService')
-const validator = require('./loginValidation')
+const validator = require('./auth.validation')
 
-module.exports = async (req, res) => {
+module.exports.login = async (req, res) => {
     // extra security layer. Client should not cache the request
     // only for the /login route
     res.header('Cache-Control', 'no-store')
       .header('Pragma', 'no-store')
 
-    const { error, value } = validator.validate(req.body)
+    const { error, value } = validator.login.validate(req.body)
     if (error) return buildResponse(res, 400, { message: error.details[0].message})
 
     // validate desktop requests
@@ -21,11 +21,26 @@ module.exports = async (req, res) => {
 
     value.computer_name = req.query.computer_name
     try {
-      const userData = await userModel.login(value)
-      const { token, user } = userData
+      const userApi = new userModel()
+      const user = await userApi.login(value)
+      const token = user.token
+      delete user.token
+
       buildResponse(res, 200, { message: 'success', token, user })
     } catch(error) {
         if (error && error.status === 401) return buildResponse(res, 401, { message: error.message })
         buildResponse(res, 500, { message: 'Internal server error'})
     }
+}
+
+module.exports.logout = async (req, res) => {
+  const { error, value } = validator.logout.validate(req.body)
+  if (error) return buildResponse(res, 400, { message: 'bad request', reason: error.details[0].message})
+
+  try {
+    await userModel.logout(value)
+    buildResponse(res, 200, { message: 'Successfully logged out'})
+  } catch (error) {
+    buildResponse(res, 500, { message: 'Something aweful happend and we couldn\'t log out', error })
+  }
 }

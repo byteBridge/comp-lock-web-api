@@ -1,9 +1,23 @@
-const userModel = require('../../models/users')
+const userModel = require('../users/index')
+
 const { buildResponse } = require('../../utils/responseService')
+
+async function create (req, res) {
+  try {
+    let newUser = req.body
+    const userApi = new userModel()
+    const createdUser = await userApi.create(newUser)
+    buildResponse(res, 200, { message: 'successfully created user.', user: createdUser })
+  } catch (error) {
+    if (error.status) return buildResponse(res, error.status, { message: error.message, error })
+    buildResponse(res, 500, { message: 'something happened', error })
+  }
+}
 
 async function singleUser (req, res) {
   try {
-    const user = userModel.findOne(req.params.username)
+    const userApi = new userModel()
+    const user = await userApi.findOne(req.params.username)
     buildResponse(res, 200, { user })
   } catch (err) {
     buildResponse(res, 500, err)
@@ -13,7 +27,8 @@ async function singleUser (req, res) {
 async function deleteUser (req, res) {
   try {
     const { username } = req.params
-    await userModel.deleteUser(username)
+    const userApi = new userModel()
+    await userApi.deleteUser(username)
     buildResponse(res, 200, { message: 'Successfully deleted user account' })
   } catch (err) {
     buildResponse(res, 500, err)
@@ -23,7 +38,8 @@ async function deleteUser (req, res) {
 
 async function allUsers (req, res) {
   try {
-    const users = await userModel.getAllUsers()
+    const userApi = new userModel()
+    const users = await userApi.getAllUsers()
     buildResponse(res, 200, { users })
   } catch (err) {
     buildResponse(res, 500, err)
@@ -32,7 +48,8 @@ async function allUsers (req, res) {
 
 async function allOnlineUsers (req, res) {
   try {
-    const users  = await userModel.getAllOnlineUsers()
+    const userApi = new userModel()
+    const users  = await userApi.getAllOnlineUsers()
     buildResponse(res, 200, { users })
   } catch (err) {
     buildResponse(res, 500, err)
@@ -44,7 +61,9 @@ async function singleUserHistory (req, res) {
   if (!username) return buildResponse(res, 400, { message: 'supply the username of the user whose history you want to view.'})
 
   try {
-    const userWithHistory = await userModel.getSingleUserHistory(username)
+    const userApi = new userModel()
+    const userWithHistory = await userApi.getSingleUserHistory(username)
+    
     buildResponse(res, 200, { user: userWithHistory })
   } catch (err) {
     buildResponse(res, 500, err)
@@ -59,7 +78,8 @@ async function changePassword (req, res) {
   if (!currentPassword && !newPassword) return buildResponse(res, 400, { message: 'supply the current password and/or the new password.'})
   
   try {
-    await userModel.changePassword({ username, currentPassword, newPassword })
+    const userApi = new userModel()
+    await userApi.changePassword({ username, currentPassword, newPassword })
     buildResponse(res, 200, { message: 'successfully changed password user account' })  
   } catch ({ message, status }) {
     buildResponse(res, status, { message })
@@ -71,7 +91,8 @@ async function blockUser (req, res) {
   if (!username) return buildResponse(res, 400, { message: 'supply the username of the user you want to block'})
 
   try {
-    await userModel.blockUser({ username, block: true })
+    const userApi = new userModel()
+    await userApi.blockUser({ username, block: true })
     buildResponse(res, 200, { message: 'successfully blocked user account' })  
   } catch (err) {
     buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'})
@@ -83,7 +104,8 @@ async function unblockUser (req, res) {
   if (!username) return buildResponse(res, 400, { message: 'supply the username of the user you want to block'})
 
   try {
-    await userModel.blockUser({ username, block: false })
+    const userApi = new userModel()
+    await userApi.blockUser({ username, block: false })
     buildResponse(res, 200, { message: 'successfully unblocked user account' })
   } catch (err) {
     buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'})
@@ -95,7 +117,8 @@ async function getUserTypeTimelimits (req, res) {
   if (!userType) return buildResponse(res, 400, { message: 'supply the account type you want to get timelimits for' })
   
   try {
-    const data = await userModel.getUserTypeTimelimits(userType)
+    const userApi = new userModel()
+    const data = await userApi.getUserTypeTimelimits(userType)
     buildResponse(res, 200, { message: 'success', data })
   } catch (err) {
     buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'})
@@ -103,7 +126,7 @@ async function getUserTypeTimelimits (req, res) {
 }
 
 async function createUserTypeTimelimits (req, res) {
-  const { timeLimitsSchema } = require('./userValidation')
+  const { timeLimitsSchema } = require('./user.validation')
   const { timeLimits, userType } = req.body
 
   if (!timeLimits) return buildResponse(res, 400, { message: 'Supply the timelimits for the new user type' })
@@ -119,7 +142,8 @@ async function createUserTypeTimelimits (req, res) {
   if (error) return buildResponse(res, 400, { message: error.details[0].message})
   
   try {
-    const data = await userModel.createUserTypeTimelimits({ userType, timeLimits })
+    const userApi = new userModel()
+    const data = await userApi.createUserTypeTimelimits({ userType, timeLimits })
     buildResponse(res, 200, {
       message: 'successfully created time limits',
       data: {
@@ -132,7 +156,7 @@ async function createUserTypeTimelimits (req, res) {
 }
 
 async function updateUserTypeTimelimits (req, res) {
-  const { timeLimitsSchema } = require('./userValidation')
+  const { timeLimitsSchema } = require('./user.validation')
   const { timeLimits } = req.body
   const { userType } = req.params
   const opts = {}
@@ -147,7 +171,8 @@ async function updateUserTypeTimelimits (req, res) {
   if (error) return buildResponse(res, 400, { message: error.details[0].message})
   
   try {
-    const data = await userModel.updateUserTypeTimelimits({ userType, timeLimits })
+    const userApi = new userModel()
+    const data = await userApi.updateUserTypeTimelimits({ userType, timeLimits })
     buildResponse(res, 200, {
       message: 'successfully updated time limits',
       data: {
@@ -161,7 +186,8 @@ async function updateUserTypeTimelimits (req, res) {
 
 async function getAllUserTypeTimelimits (req, res) {
  try {
-   const data = await userModel.getAllUserTypeTimelimits()
+    const userApi = new userModel()
+    const data = await userApi.getAllUserTypeTimelimits()
    buildResponse(res, 200, { message: 'success', data })
  } catch (err) {
   buildResponse(res, 500, { message: 'Something really nasty happened. Contact the developer of the software <kgparadzayi@gmail.com>'})
@@ -169,6 +195,7 @@ async function getAllUserTypeTimelimits (req, res) {
 }
 
 module.exports = {
+  create,
   allUsers,
   allOnlineUsers,
   singleUser,
