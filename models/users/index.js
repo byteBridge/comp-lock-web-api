@@ -118,6 +118,15 @@ module.exports = class User {
       // after passwords match and the user is using the web client resolve
       if(!computer_name) return dbUser
 
+      // is the computer available for use (is registered and active)
+      const computer = await knex('computers').where({ name: computer_name }).select().first()
+      
+      if (!computer) {
+        throw ({ message: `${computer_name} is not registered. Consult the admin to register the computer for you.` })
+      } else if (computer.active === false) {
+        throw ({ message: `${computer_name} was deactivated. Consult the admin to re activate the computer for you.` })
+      }
+
       // is user blocked?
       if (dbUser.blocked === true) throw { message: `We regret to inform you that your account qualifies to be blocked. Report by the librarian's desk to have it unblocked` }
       
