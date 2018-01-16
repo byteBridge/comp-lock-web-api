@@ -23,7 +23,19 @@ async function getAllComputers (req, res) {
   }
 }
 
+async function deactivate (req, res) {
+  try {
+    let name = req.body.name
+    const computerApi = new ComputerModel()
+    const response = await computerApi.deactivate({ name })
+    buildResponse(res, 200, { message: response.message })
+  } catch (err) {
+    buildResponse(res, 500, err)
+  }
+}
+
 module.exports = {
   create,
-  getAllComputers
+  getAllComputers,
+  deactivate
 }

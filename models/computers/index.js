@@ -56,4 +56,17 @@ module.exports = class Computer {
     }
   }
 
+  async deactivate ({ name }) {
+    try {
+      name = name || ''
+      await knex('computers').update({ active: false }).where({ name })
+      let reply = {
+        message: 'Successfully deactivated ' + name
+      }
+      return reply
+    } catch (error) {
+      throw error
+    }
+
+  }
 }
