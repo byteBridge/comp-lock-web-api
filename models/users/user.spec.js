@@ -155,6 +155,8 @@ describe('#User.login()', () => {
   const studentCredentialsForDesktop = { username: 'garikai', password: 'rodneygg', computer_name: 'computer1' }
   const studentCredentialsForDesktopTimeUp = { username: 'denzel', password: 'makombeshushi', computer_name: 'computer1' }
   const studentCredentialsForDesktopBlocked = { username: 'stephen', password: 'kundicme', computer_name: 'computer2' }
+  const studentCredentialsForDesktopComputerDeactivated = { username: 'garikai', password: 'rodneygg', computer_name: 'computer5' }
+  const studentCredentialsForDesktopComputerUnregistered = { username: 'garikai', password: 'rodneygg', computer_name: 'computer500' }
   const studentCredentialsForWeb = { username: 'garikai', password: 'rodneygg' }
 
   it('should login an administrator', async () => {
@@ -221,7 +223,6 @@ describe('#User.login()', () => {
     const user = new User()
     try {
       await user.login(studentCredentialsForDesktop)
-      await user.login(studentCredentialsForDesktop)
     } catch (error) {
       should.exist(error)
       error.should.contain.keys('status', 'message')
@@ -230,7 +231,29 @@ describe('#User.login()', () => {
     }
   })
 
+  it('should not log in a student from a deactivated computer', async () => {
+    const user = new User()
+    try {
+      await user.login(studentCredentialsForDesktopComputerUnregistered)
+    } catch (error) {
+      should.exist(error)
+      error.should.contain.keys('status', 'message')
+      error.status.should.eql(401)
+      error.message.should.eql(`${studentCredentialsForDesktopComputerUnregistered.computer_name} is not registered. Consult the admin to register the computer for you.`)
+    }
+  })
 
+  it('should not log in a student from a deactivated computer', async () => {
+    const user = new User()
+    try {
+      await user.login(studentCredentialsForDesktopComputerDeactivated)
+    } catch (error) {
+      should.exist(error)
+      error.should.contain.keys('status', 'message')
+      error.status.should.eql(401)
+      error.message.should.eql(`${studentCredentialsForDesktopComputerDeactivated.computer_name} was deactivated. Consult the admin to re activate the computer for you.`)
+    }
+  })
   /**
    * @description This function is intended to attemp to create a user with missing keys (fields)
    * @param {*} newUser The user to be created. Ideal with all the required key fields
