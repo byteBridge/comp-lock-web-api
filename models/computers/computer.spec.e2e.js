@@ -31,7 +31,7 @@ describe('register a new computer', () => {
   const deactivateComputersUrl = '/api/v1/deactivate'
 
   const computer = {
-    name: 'computer3'
+    name: 'computer10'
   }
 
   before(done => {
