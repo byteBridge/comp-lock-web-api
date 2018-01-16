@@ -97,3 +97,19 @@ describe('#Computer.create()', () => {
     }
   }
 })
+
+describe('#Computer.deactivate', () => {
+  beforeEach(() => knex.migrate.rollback()
+    .then(() => knex.migrate.latest())
+    .then(() => knex.seed.run())
+  )
+
+  afterEach(() => knex.migrate.rollback())
+
+  it('should successfully block a compouter', async () => {
+    const computerApi = new Computer()
+    const response = await computerApi.deactivate({ name: 'computer1' })
+    response.should.be.an('object')
+    response.should.contain.keys('message')
+  })
+})
