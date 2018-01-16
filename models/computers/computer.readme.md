@@ -8,6 +8,7 @@ The following routes are available for the ```Computer``` resource. They are all
 | --- | --- | --- | --- |
 | `POST` | '/new' | Admin Required | Add a new computer to the system |
 | `GET` | '/' | Required | Gets all the computers registered in the system |
+| `PUT` | '/deactivate' | Admin Required | Deactivate the computer so that it is not accessible |
 
 ## #create()
 
@@ -108,6 +109,40 @@ Returns all the computers in the databse
             "status": "available"
         }
     ]
+}
+```
+
+### Error response
+
+**If no token is provided**
+```json
+{
+    "message": "No token provided."
+}
+```
+---
+
+## #deactivate()
+
+Deactivate the computer so that it is not accessible
+
+**Usage**
+```javascript
+  const axios = require('axios')
+
+  const res = await axios.put('/api/v1/computers/deactivate', {
+    name: 'computer3'
+  })
+
+  console.log(res.data)
+```
+
+> The responses below are just a demo to show the keys that the response object may have 
+### Success response
+
+```json
+{
+    "message": "successfully deactivated computer."
 }
 ```
 
