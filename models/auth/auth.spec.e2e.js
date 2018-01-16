@@ -81,7 +81,7 @@ describe('POST /api/v1/auth/login', () => {
       .send(user)
       .query({
         app: 'desktop',
-        computer_name: 'Computer1'
+        computer_name: 'computer1'
       })
       .end((err, res) => {
         should.not.exist(err)
@@ -379,7 +379,7 @@ describe('POST /api/v1/auth/login', () => {
     chai.request(server)
       .post(loginUrl)     
       .send(user)
-      .query({ computer_name: 'Computer1' })
+      .query({ computer_name: 'computer1' })
       .end((err, res) => {
         should.exist(err)
         res.redirects.length.should.eql(0)
