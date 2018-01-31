@@ -14,7 +14,7 @@ describe('#Computer.create()', () => {
 
   afterEach(() => knex.migrate.rollback())
   let newComputer = {
-    name: 'Computer3'
+    name: 'Computer10'
   }
 
   it('should successfully create a new computer', async () => {
