@@ -56,6 +56,17 @@ async function allOnlineUsers (req, res) {
   }
 }
 
+async function clearOnlineUser (req, res) {
+  try {
+    const username = req.params.username
+    const userApi = new userModel()
+    await userApi.clearOnlineUser({ username })
+    buildResponse(res, 200, { message: `Successfully cleared ${username}'s account`  })
+  } catch (err) {
+    buildResponse(res, 500, err)
+  }
+}
+
 async function singleUserHistory (req, res) {
   const username = req.params.username
   if (!username) return buildResponse(res, 400, { message: 'supply the username of the user whose history you want to view.'})
@@ -198,6 +209,7 @@ module.exports = {
   create,
   allUsers,
   allOnlineUsers,
+  clearOnlineUser,
   singleUser,
   deleteUser,
   singleUserHistory,

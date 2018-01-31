@@ -9,6 +9,7 @@ The following routes are available for the ```User``` resource. They are all pre
 | `GET` | '/' | Requied | Returns a list of all the users in the system |
 | `POST` | '/new' | Admin required | Create a new account. |
 | `GET` | '/online' | Admin required | View all non admin accounts that are logged in no the desktop application |
+| `PUT` | '/online/:username/clear' | Admin required | Clear an account from online |
 | `GET` | '/:username' | Required | Get profile info for a single user |
 | `GET` | '/:username/history' | Required | Gets the login history of a single non admin account |
 | `PUT` | '/:username/block' | Admin required | Revokes access to the desktop client fro the user, but the user can still log in from the web |

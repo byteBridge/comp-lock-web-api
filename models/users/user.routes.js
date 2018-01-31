@@ -7,6 +7,7 @@ router.post('/new', authenticateAdmin, controller.create)
 // Returns a list of users
 router.get('/', authenticate, controller.allUsers)
 router.get('/online', authenticateAdmin, controller.allOnlineUsers)
+router.put('/online/:username/clear', authenticateAdmin, controller.clearOnlineUser)
 
 // The timelimits stuff
 router.post('/timelimits/new', authenticateAdmin, controller.createUserTypeTimelimits)

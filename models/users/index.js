@@ -23,7 +23,8 @@ module.exports = class User {
     try {
       const { error, value } = joi.newUser.validate(user, { abortEarly: false })
       if (error) throw error
-
+      value.password = await hashedPassword(value.password)
+      console.log(value)
       const createdUser = await knex('users').insert(value).returning('*')
       return createdUser[0]
     } catch (error) {
@@ -316,6 +317,15 @@ module.exports = class User {
         .select(...requiredFields)
     } catch(err) {
       throw err
+    }
+  }
+
+  async clearOnlineUser ({ username }) {
+    try {
+      username = username || ''
+      await knex('online').where({ username }).del()
+    } catch (error) {
+      throw error
     }
   }
 }
