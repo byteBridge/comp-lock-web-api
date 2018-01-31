@@ -34,6 +34,18 @@ async function deactivate (req, res) {
   }
 }
 
+
+async function reactivate (req, res) {
+  try {
+    let name = req.body.name
+    const computerApi = new ComputerModel()
+    const response = await computerApi.reactivate({ name })
+    buildResponse(res, 200, { message: response.message })
+  } catch (err) {
+    buildResponse(res, 500, err)
+  }
+}
+
 async function unregister (req, res) {
   try {
     let name = req.body.name
@@ -49,5 +61,6 @@ module.exports = {
   create,
   getAllComputers,
   deactivate,
+  reactivate,
   unregister
 }

@@ -29,6 +29,7 @@ describe('register a new computer', () => {
   const registerUrl ='/api/v1/computers/new'
   const getComputersUrl = '/api/v1/computers'
   const deactivateComputersUrl = '/api/v1/deactivate'
+  const reactivateComputersUrl = '/api/v1/reactivate'
   const unregisterComputersUrl = '/api/v1/unregister'
 
   const computer = {
@@ -162,6 +163,21 @@ describe('register a new computer', () => {
     it('should deactive a specified computer', async () => {
       chai.request(server)
         .put(deactivateComputersUrl)
+        .set({ Authorization: token })
+        .end((err, res) => {
+          should.not.exist(err)
+          res.redirects.length.should.eql(0)
+          res.status.should.eql(200)
+          res.type.should.eql('application/json')
+          res.body.should.contain.keys('message')
+        })
+    })
+  })
+
+  describe('PUT /api/v1/computers/reactivate', () => {
+    it('should deactive a specified computer', async () => {
+      chai.request(server)
+        .put(reactivateComputersUrl)
         .set({ Authorization: token })
         .end((err, res) => {
           should.not.exist(err)

@@ -68,6 +68,19 @@ module.exports = class Computer {
       throw error
     }
   }
+
+  async reactivate ({ name }) {
+    try {
+      name = name || ''
+      await knex('computers').update({ active: true }).where({ name })
+      let reply = {
+        message: 'Successfully reactivated ' + name
+      }
+      return reply
+    } catch (error) {
+      throw error
+    }
+  }
   
   async unregister ({ name }) {
     try {
