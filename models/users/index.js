@@ -115,8 +115,9 @@ module.exports = class User {
       // is user password valid?
       if (! await comparePasswords(password, dbUser.password)) throw ({ message: 'invalid login details' })
       
+      // if the user is an admin resolve immediately
       // after passwords match and the user is using the web client resolve
-      if(!computer_name) return dbUser
+      if (dbUser.type === 'administrator' || !computer_name)  return dbUser
 
       // is the computer available for use (is registered and active)
       const computer = await knex('computers').where({ name: computer_name }).select().first()
