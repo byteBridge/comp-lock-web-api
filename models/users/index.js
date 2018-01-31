@@ -123,9 +123,9 @@ module.exports = class User {
       const computer = await knex('computers').where({ name: computer_name }).select().first()
       
       if (!computer) {
-        throw ({ message: `${computer_name} is not registered. Consult the admin to register the computer for you.` })
+        throw ({ message: `The computer, ${computer_name} is not registered. Consult the admin to register the computer for you.` })
       } else if (computer.active === false) {
-        throw ({ message: `${computer_name} was deactivated. Consult the admin to re activate the computer for you.` })
+        throw ({ message: `The computer, ${computer_name} was deactivated. Consult the admin to re activate the computer for you.` })
       }
 
       // is user blocked?

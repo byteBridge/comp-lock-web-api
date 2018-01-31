@@ -239,7 +239,7 @@ describe('#User.login()', () => {
       should.exist(error)
       error.should.contain.keys('status', 'message')
       error.status.should.eql(401)
-      error.message.should.eql(`${studentCredentialsForDesktopComputerUnregistered.computer_name} is not registered. Consult the admin to register the computer for you.`)
+      error.message.should.eql(`The computer, ${studentCredentialsForDesktopComputerUnregistered.computer_name} is not registered. Consult the admin to register the computer for you.`)
     }
   })
 
@@ -251,7 +251,7 @@ describe('#User.login()', () => {
       should.exist(error)
       error.should.contain.keys('status', 'message')
       error.status.should.eql(401)
-      error.message.should.eql(`${studentCredentialsForDesktopComputerDeactivated.computer_name} was deactivated. Consult the admin to re activate the computer for you.`)
+      error.message.should.eql(`The computer, ${studentCredentialsForDesktopComputerDeactivated.computer_name} was deactivated. Consult the admin to re activate the computer for you.`)
     }
   })
   /**
