@@ -67,6 +67,18 @@ module.exports = class Computer {
     } catch (error) {
       throw error
     }
-
+  }
+  
+  async unregister ({ name }) {
+    try {
+      name = name || ''
+      await knex('computers').where({ name }).del()
+      let reply = {
+        message: 'Successfully unregistered ' + name
+      }
+      return reply
+    } catch (error) {
+      throw error
+    }
   }
 }

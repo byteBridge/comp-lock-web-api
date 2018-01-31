@@ -113,3 +113,20 @@ describe('#Computer.deactivate', () => {
     response.should.contain.keys('message')
   })
 })
+
+
+describe('#Computer.unregister', () => {
+  beforeEach(() => knex.migrate.rollback()
+    .then(() => knex.migrate.latest())
+    .then(() => knex.seed.run())
+  )
+
+  afterEach(() => knex.migrate.rollback())
+
+  it('should successfully unregister a compouter', async () => {
+    const computerApi = new Computer()
+    const response = await computerApi.unregister({ name: 'computer1' })
+    response.should.be.an('object')
+    response.should.contain.keys('message')
+  })
+})

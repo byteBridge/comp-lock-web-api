@@ -34,8 +34,20 @@ async function deactivate (req, res) {
   }
 }
 
+async function unregister (req, res) {
+  try {
+    let name = req.body.name
+    const computerApi = new ComputerModel()
+    const response = await computerApi.unregister({ name })
+    buildResponse(res, 200, { message: response.message })
+  } catch (err) {
+    buildResponse(res, 500, err)
+  }
+}
+
 module.exports = {
   create,
   getAllComputers,
-  deactivate
+  deactivate,
+  unregister
 }
