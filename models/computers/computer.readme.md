@@ -9,6 +9,8 @@ The following routes are available for the ```Computer``` resource. They are all
 | `POST` | '/new' | Admin Required | Add a new computer to the system |
 | `GET` | '/' | Required | Gets all the computers registered in the system |
 | `PUT` | '/deactivate' | Admin Required | Deactivate the computer so that it is not accessible |
+| `PUT` | '/reactivate' | Admin Required | Reactivate the computer so that it can be accessible |
+| `Delete` | '/unregister' | Admin Required | Remove the computer from the system |
 
 ## #create()
 
@@ -143,6 +145,76 @@ Deactivate the computer so that it is not accessible
 ```json
 {
     "message": "successfully deactivated computer."
+}
+```
+
+### Error response
+
+**If no token is provided**
+```json
+{
+    "message": "No token provided."
+}
+```
+---
+
+
+## #reactivate()
+
+Deactivate the computer so that it is not accessible
+
+**Usage**
+```javascript
+  const axios = require('axios')
+
+  const res = await axios.put('/api/v1/computers/reactivate', {
+    name: 'computer3'
+  })
+
+  console.log(res.data)
+```
+
+> The responses below are just a demo to show the keys that the response object may have 
+### Success response
+
+```json
+{
+    "message": "successfully reactivated computer."
+}
+```
+
+### Error response
+
+**If no token is provided**
+```json
+{
+    "message": "No token provided."
+}
+```
+---
+
+
+## #unregister()
+
+Deactivate the computer so that it is not accessible
+
+**Usage**
+```javascript
+  const axios = require('axios')
+
+  const res = await axios.delete('/api/v1/computers/unregister', {
+    name: 'computer3'
+  })
+
+  console.log(res.data)
+```
+
+> The responses below are just a demo to show the keys that the response object may have 
+### Success response
+
+```json
+{
+    "message": "successfully unregistered computer."
 }
 ```
 
