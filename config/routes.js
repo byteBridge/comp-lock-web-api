@@ -4,6 +4,7 @@ module.exports.
 mount = app => {
 	const usersRoutes = require('../models/users/user.routes')
 	const authRoutes = require('../models/auth/auth.routes')
+	const computerRoutes = require('../models/computers/computer.routes')
 	const restoreDatabaseRoutes = require('../models/restore-database/restore-database.routes')
 	
 	// tomake the travis builds succeed
@@ -14,5 +15,6 @@ mount = app => {
 
 	app.use('/api/v1/users', usersRoutes)
 	app.use('/api/v1/auth', authRoutes)
+	app.use('/api/v1/computers', computerRoutes)
 	app.use('/restore-database', restoreDatabaseRoutes)
 }

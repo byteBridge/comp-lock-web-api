@@ -13,7 +13,7 @@ async function comparePasswords (reqPass, dbPass) {
  * Generate token for use when login in
  */
 function generateToken (payload) {
-  return jwt.sign(payload, process.env.JWT_SECRET)
+  return 'JWT ' + jwt.sign(payload, process.env.JWT_SECRET)
 }
 
 /**

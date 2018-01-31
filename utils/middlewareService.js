@@ -26,11 +26,19 @@ function allowDomains (req, res, next) {
 	next()
 }
 
+// from JWT fji34uyr83 to fji34uyr83
+// or from BEAREr dfdkfjdkfjdk to dfdkfjdkfjdk
+function parseAuthHeader (req) {
+	// proposal to use standard schemes in this case JWT <token>
+	const authHeader = req.headers.authorization ? req.headers.authorization.split(' ') : []
+	return authHeader.length > 0 ? authHeader[1] : ''
+}
+
 /**
  * Authentincate the user. Use when protecting api endpoints
  */
 function authenticate (req, res, next) {
-	const token = req.headers.authorization
+	const token = parseAuthHeader(req)
 	if (!token) return buildResponse(res, 401, { message: 'No token provided.'})
 
 	verifyToken(token, JWT_SECRET, (err, decoded) => {
@@ -41,7 +49,7 @@ function authenticate (req, res, next) {
 }
 
 function authenticateAdmin (req, res, next) {
-	const token = req.headers.authorization
+	const token = parseAuthHeader(req)
 	if (!token) return buildResponse(res, 401, { message: 'No token provided.'})
 
 	verifyToken(token, JWT_SECRET, (err, decoded) => {

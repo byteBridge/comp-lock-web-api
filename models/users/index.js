@@ -115,8 +115,18 @@ module.exports = class User {
       // is user password valid?
       if (! await comparePasswords(password, dbUser.password)) throw ({ message: 'invalid login details' })
       
+      // if the user is an admin resolve immediately
       // after passwords match and the user is using the web client resolve
-      if(!computer_name) return dbUser
+      if (dbUser.type === 'administrator' || !computer_name)  return dbUser
+
+      // is the computer available for use (is registered and active)
+      const computer = await knex('computers').where({ name: computer_name }).select().first()
+      
+      if (!computer) {
+        throw ({ message: `The computer, ${computer_name} is not registered. Consult the admin to register the computer for you.` })
+      } else if (computer.active === false) {
+        throw ({ message: `The computer, ${computer_name} was deactivated. Consult the admin to re activate the computer for you.` })
+      }
 
       // is user blocked?
       if (dbUser.blocked === true) throw { message: `We regret to inform you that your account qualifies to be blocked. Report by the librarian's desk to have it unblocked` }
