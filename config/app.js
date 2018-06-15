@@ -10,11 +10,9 @@ module.exports.mount = (app, express) => {
 	const helmet = require('helmet')
 	const path = require('path')
 
-	app.set('port', process.env.PORT)
-
 	/* APP MIDDLEWARE */
 	app.use(allowDomains)
-	if (process.env.NODE_ENV === 'development') { app.use(logger('dev')) }
+	app.use(logger('dev'))
 
 	// some protection via setting appropriate headers
 	app.use(helmet())
