@@ -175,6 +175,7 @@ module.exports = class User {
     
       // Register the user online in the database
       await knex('online').insert(userMetaData).returning('*')
+      await knex('computers').where({ name: computer_name }).update({ last_used_by: username, last_used_time: new Date() })
     } catch (err) {
       throw err
     }

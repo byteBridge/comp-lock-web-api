@@ -4,6 +4,8 @@ exports.up = function(knex, Promise) {
     table.string('name').primary()
     table.boolean('active').defaultTo(true)
     table.timestamp('created_at').defaultTo(knex.fn.now())
+    table.string('last_used_by')
+    table.timestamp('last_used_time')
   })   
 }
 
