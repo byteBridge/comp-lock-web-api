@@ -23,6 +23,8 @@ module.exports = class Computer {
         'computers.name',
         'computers.active',
         'computers.created_at',
+        'computers.last_used_by',
+        'computers.last_used_time',
         'online.username',
         'online.login_time',
         'online.login_date',
