@@ -7,7 +7,7 @@ const { JWT_SECRET } = process.env
  * Handles errors for non existent routes
  */
 function handle404 (req, res, next) {
-	res.json({message: 'Route not found'})
+	res.status(404).json({message: 'Route not found'})
 }
 
 /*
