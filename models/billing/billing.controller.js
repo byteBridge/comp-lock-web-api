@@ -46,7 +46,8 @@ exports.pingSubscription = async function (req, res) {
     }
 
     buildResponse(res, 200, {
-      message: response.message
+      message: response.message,
+      status: response.status
     })
   }
   
@@ -57,6 +58,11 @@ exports.pingSubscription = async function (req, res) {
    */
   exports.getLastTransaction = async function (res, res) {
     const billing = new BillingModel()
-    const response = await billing.getLastTransaction()
+    let response = await billing.getLastTransaction()
+    if (response.length > 0) {
+      response = response[0]
+    } else {
+      response = null
+    }
     buildResponse(res, 200, response)
   }
