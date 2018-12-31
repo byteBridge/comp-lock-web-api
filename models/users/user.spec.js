@@ -7,12 +7,12 @@ const User =  require('./')
 const knex = require('../../database')
 
 describe('#User.create()', () => {
-  beforeEach(() => knex.migrate.rollback()
+  beforeEach(async () =>  await knex.migrate.rollback()
     .then(() => knex.migrate.latest())
     .then(() => knex.seed.run())
   )
 
-  afterEach(() => knex.migrate.rollback())
+  afterEach(async () =>  await knex.migrate.rollback())
   let newUser = {
     f_name: 'Tapiwanashe',
     s_name: 'makotose',
@@ -145,12 +145,12 @@ describe('#User.create()', () => {
 
 
 describe('#User.login()', () => {
-  beforeEach(() => knex.migrate.rollback()
+  beforeEach(async () =>  await knex.migrate.rollback()
     .then(() => knex.migrate.latest())
     .then(() => knex.seed.run())
   )
 
-  afterEach(() => knex.migrate.rollback())
+  afterEach(async () =>  await knex.migrate.rollback())
   const adminCredentials = { username: 'kudakwashe', password: 'paradzayi' }
   const studentCredentialsForDesktop = { username: 'garikai', password: 'rodneygg', computer_name: 'computer1' }
   const studentCredentialsForDesktopTimeUp = { username: 'denzel', password: 'makombeshushi', computer_name: 'computer1' }
@@ -278,12 +278,12 @@ describe('#User.login()', () => {
 })
 
 describe('#User.findOne()', () => {
-  beforeEach(() => knex.migrate.rollback()
+  beforeEach(async () =>  await knex.migrate.rollback()
     .then(() => knex.migrate.latest())
     .then(() => knex.seed.run())
   )
 
-  afterEach(() => knex.migrate.rollback())
+  afterEach(async () =>  await knex.migrate.rollback())
   let existingUser = {
     username: 'garikai',
     type: 'student',

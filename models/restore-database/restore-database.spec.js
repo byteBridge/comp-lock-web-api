@@ -20,13 +20,13 @@ describe('login', () => {
     })
   })
 
-  after(done => {
-    server.close(done)
+  after(async () => {
+    await server.close()
   })
 
-  beforeEach(() => knex.migrate.rollback())
+  beforeEach(async () =>  await knex.migrate.rollback())
 
-  afterEach(() => knex.migrate.rollback())
+  afterEach(async () =>  await knex.migrate.rollback())
   
   describe('POST /restore-database', () => {
     it('should should correctly apply migrations', done => {

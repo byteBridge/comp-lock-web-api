@@ -7,12 +7,12 @@ const Computer =  require('./')
 const knex = require('../../database')
 
 describe('#Computer.create()', () => {
-  beforeEach(() => knex.migrate.rollback()
+  beforeEach(async () =>  await knex.migrate.rollback()
     .then(() => knex.migrate.latest())
     .then(() => knex.seed.run())
   )
 
-  afterEach(() => knex.migrate.rollback())
+  afterEach(async () =>  await knex.migrate.rollback())
   let newComputer = {
     name: 'Computer10'
   }
@@ -99,12 +99,12 @@ describe('#Computer.create()', () => {
 })
 
 describe('#Computer.deactivate', () => {
-  beforeEach(() => knex.migrate.rollback()
+  beforeEach(async () =>  await knex.migrate.rollback()
     .then(() => knex.migrate.latest())
     .then(() => knex.seed.run())
   )
 
-  afterEach(() => knex.migrate.rollback())
+  afterEach(async () =>  await knex.migrate.rollback())
 
   it('should successfully block a compouter', async () => {
     const computerApi = new Computer()
@@ -115,12 +115,12 @@ describe('#Computer.deactivate', () => {
 })
 
 describe('#Computer.reactivate', () => {
-  beforeEach(() => knex.migrate.rollback()
+  beforeEach(async () =>  await knex.migrate.rollback()
     .then(() => knex.migrate.latest())
     .then(() => knex.seed.run())
   )
 
-  afterEach(() => knex.migrate.rollback())
+  afterEach(async () =>  await knex.migrate.rollback())
 
   it('should successfully un block a compouter', async () => {
     const computerApi = new Computer()
@@ -131,12 +131,12 @@ describe('#Computer.reactivate', () => {
 })
 
 describe('#Computer.unregister', () => {
-  beforeEach(() => knex.migrate.rollback()
+  beforeEach(async () =>  await knex.migrate.rollback()
     .then(() => knex.migrate.latest())
     .then(() => knex.seed.run())
   )
 
-  afterEach(() => knex.migrate.rollback())
+  afterEach(async () =>  await knex.migrate.rollback())
 
   it('should successfully unregister a compouter', async () => {
     const computerApi = new Computer()

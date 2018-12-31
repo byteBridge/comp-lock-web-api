@@ -45,16 +45,16 @@ describe('POST /api/v1/auth/login', () => {
     })
   })
 
-  after(done => {
-    server.close(done())
+  after(async () => {
+    await server.close()
   })
 
-  beforeEach(() => knex.migrate.rollback()
+  beforeEach(async () =>  await knex.migrate.rollback()
     .then(() => knex.migrate.latest())
     .then(() => knex.seed.run())
   )
 
-  afterEach(() => knex.migrate.rollback())
+  afterEach(async () => await knex.migrate.rollback())
   it('should login a student from the web', async () => {
     chai.request(server)
       .post(loginUrl)

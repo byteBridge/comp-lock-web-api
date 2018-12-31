@@ -45,16 +45,16 @@ describe('register a new user', () => {
     })
   })
 
-  after(done => {
-    server.close(done)
+  after(async () => {
+    await server.close()
   })
 
-  beforeEach(() => knex.migrate.rollback()
+  beforeEach(async () =>  await knex.migrate.rollback()
     .then(() => knex.migrate.latest())
     .then(() => knex.seed.run())
   )
 
-  afterEach(() => knex.migrate.rollback())
+  afterEach(async () =>  await knex.migrate.rollback())
   
   describe('POST /api/v1/users/new', () => {
     it('should register a user', async () => {
