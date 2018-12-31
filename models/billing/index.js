@@ -22,7 +22,7 @@ module.exports = class MockBillingServer {
         products: JSON.stringify(products),
         authemail,
         mobileNumber,
-        status: "created",
+        status: "awaiting-payment",
         mobileMoneyProvider,
         reference
     });
