@@ -28,7 +28,7 @@ module.exports = class MockBillingServer {
     });
 
     const response = await axios.post(
-      "http://paynow.now.sh/pay/mobile",
+      "http://localhost:3001/pay/mobile",
       {
         products,
         authemail,
@@ -68,7 +68,7 @@ module.exports = class MockBillingServer {
    */
   async pingSubscription(reference) {
     return (await axios.get(
-      "http://paynow.now.sh/complock/ping-subscription/" + reference
+      "http://localhost:3001/complock/ping-subscription/" + reference
     )).data;
   }
 
@@ -77,7 +77,7 @@ module.exports = class MockBillingServer {
    * Only available once the transactions has been paid
    */
   async getComputerTokens(reference) {
-    const response = (await axios.get('http://paynow.now.sh/complock/tokens/' + reference)).data;
+    const response = (await axios.get('http://localhost:3001/complock/tokens/' + reference)).data;
     return response;
   }
 

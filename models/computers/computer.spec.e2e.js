@@ -28,9 +28,9 @@ describe('register a new computer', () => {
   let server
   const registerUrl ='/api/v1/computers/new'
   const getComputersUrl = '/api/v1/computers'
-  const deactivateComputersUrl = '/api/v1/deactivate'
-  const reactivateComputersUrl = '/api/v1/reactivate'
-  const unregisterComputersUrl = '/api/v1/unregister'
+  const deactivateComputersUrl = '/api/v1/computers/deactivate'
+  const reactivateComputersUrl = '/api/v1/computers/reactivate'
+  const unregisterComputersUrl = '/api/v1/computers/unregister'
 
   const computer = {
     name: 'computer10'
@@ -43,16 +43,16 @@ describe('register a new computer', () => {
     })
   })
 
-  after(done => {
-    server.close(done)
+  after(async () => {
+    await server.close()
   })
 
-  beforeEach(() => knex.migrate.rollback()
+  beforeEach(async () =>  await knex.migrate.rollback()
     .then(() => knex.migrate.latest())
     .then(() => knex.seed.run())
   )
 
-  afterEach(() => knex.migrate.rollback())
+  afterEach(async () => await knex.migrate.rollback())
   
   describe('POST /api/v1/computers/new', () => {
     it('should register a computer', async () => {
@@ -192,7 +192,7 @@ describe('register a new computer', () => {
   describe('DELETE /api/v1/computers/unregister', () => {
     it('should unregister a specified computer', async () => {
       chai.request(server)
-        .put(unregisterComputersUrl)
+        .del(unregisterComputersUrl)
         .set({ Authorization: token })
         .end((err, res) => {
           should.not.exist(err)
