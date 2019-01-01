@@ -61,6 +61,18 @@ exports.developmentErrors = (err, req, res, next) => {
 */
 exports.productionErrors = (err, req, res, next) => {
   res.status(err.status || 500);
+  // fix for axios errors
+  let axiosKeys = ['request', 'response', 'config']
+  let isItAxios = true
+  Object.keys(err).forEach(k => {
+    isItAxios = axiosKeys.indexOf(k) > -1
+  })
+
+  // remove the circular structures
+  if (isItAxios) {
+    err = err.response.data
+  }
+
   res.json({
     message: err.message,
     error: err
