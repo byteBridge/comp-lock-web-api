@@ -1,7 +1,7 @@
 const knex = require('../../database')
 const joi = require('./user.validation')
 const moment = require('moment')
-const { generateToken, comparePasswords, hashedPassword } = require('../../utils/authService')
+const { generateToken, comparePasswords, hashedPassword, verifyToken } = require('../../utils/authService')
 const { checkTimeUsage, successResponseToApi, errorResponseToApi } = require('../utils')
 
 module.exports = class User {
@@ -24,7 +24,6 @@ module.exports = class User {
       const { error, value } = joi.newUser.validate(user, { abortEarly: false })
       if (error) throw error
       value.password = await hashedPassword(value.password)
-      console.log(value)
       const createdUser = await knex('users').insert(value).returning('*')
       return createdUser[0]
     } catch (error) {
@@ -127,7 +126,20 @@ module.exports = class User {
         throw ({ message: `The computer, ${computer_name} is not registered. Consult the admin to register the computer for you.` })
       } else if (computer.active === false) {
         throw ({ message: `The computer, ${computer_name} was deactivated. Consult the admin to re activate the computer for you.` })
+      } 
+      
+      // verifyToken throws an error if it fails to verify, empty string, wrong key, etc
+      let activationTokenData = false
+      const paymentError = { message: `Payment for the activation of the computer, ${computer_name} has expired. Consult the admin to re activate the computer for you.`}
+      try {
+        activationTokenData = verifyToken(computer.activation_token || '', process.env.JWT_SECRET)
+      } catch (error) {
+        throw(paymentError)
       }
+      
+      // Now if there is no token or if the token has expired (verifyToken takes care of expiry too)
+      // Just throw an error notifying the users that the computer has not been paid for.
+      if (!activationTokenData || !moment(computer.token_expiry_time).isAfter(moment())) throw(paymentError)
 
       // is user blocked?
       if (dbUser.blocked === true) throw { message: `We regret to inform you that your account qualifies to be blocked. Report by the librarian's desk to have it unblocked` }
