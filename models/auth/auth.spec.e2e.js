@@ -396,4 +396,7 @@ describe('POST /api/v1/auth/login', () => {
         
       })
   })
+
+  xit('should fail when a students logs in on a computer without/invalid token', async () => {})
+
 })
